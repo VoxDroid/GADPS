@@ -1,0 +1,6 @@
+{
+    "require": {
+        "phpoffice/phpspreadsheet": "^3.4",
+        "tecnickcom/tcpdf": "^6.7"
+    }
+}
