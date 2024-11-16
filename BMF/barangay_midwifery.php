@@ -1,4 +1,5 @@
 <?php
+// barangay_midwifery.php
 // PHP code for database connection and initial query setup
 $db_file = '../gender_dev_profiling.db';
 $db = new SQLite3($db_file);
@@ -801,7 +802,56 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['archive_id'])) {
     </footer>
 
     <script>
+        // Store the current scroll positions and page number
+        let currentVerticalScrollPosition = 0;
+        let currentHorizontalScrollPosition = 0;
+        let currentPage = <?php echo $page; ?>;
+
+        // Function to save the current scroll positions and page number
+        function saveState() {
+            currentVerticalScrollPosition = window.pageYOffset;
+            const tableScrollContainer = document.querySelector('.table-scroll-container');
+            currentHorizontalScrollPosition = tableScrollContainer ? tableScrollContainer.scrollLeft : 0;
+            localStorage.setItem('verticalScrollPosition', currentVerticalScrollPosition);
+            localStorage.setItem('horizontalScrollPosition', currentHorizontalScrollPosition);
+            // Remove this line:
+            // localStorage.setItem('currentPage', currentPage);
+        }
+
+        // Function to restore the scroll positions and navigate to the saved page
+        function restoreState() {
+            const savedVerticalPosition = localStorage.getItem('verticalScrollPosition');
+            const savedHorizontalPosition = localStorage.getItem('horizontalScrollPosition');
+            // Remove these lines:
+            // const savedPage = localStorage.getItem('currentPage');
+            // if (savedPage && savedPage !== '<?php echo $page; ?>') {
+            //     window.location.href = updateQueryString({ page: savedPage });
+            //     return;
+            // }
+
+            if (savedVerticalPosition) {
+                window.scrollTo(0, parseInt(savedVerticalPosition));
+            }
+            if (savedHorizontalPosition) {
+                const tableScrollContainer = document.querySelector('.table-scroll-container');
+                if (tableScrollContainer) {
+                    tableScrollContainer.scrollLeft = parseInt(savedHorizontalPosition);
+                }
+            }
+        }
+
+        // Function to update query string
+        function updateQueryString(params) {
+            const searchParams = new URLSearchParams(window.location.search);
+            for (const [key, value] of Object.entries(params)) {
+                searchParams.set(key, value);
+            }
+            return `${window.location.pathname}?${searchParams.toString()}`;
+        }
+
+        // Modify existing functions to save state
         function showArchiveModal(id) {
+            saveState();
             const modal = document.getElementById('archiveModal');
             const archiveId = document.getElementById('archiveId');
             modal.style.display = 'block';
@@ -813,38 +863,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['archive_id'])) {
             modal.style.display = 'none';
         }
 
-        window.onclick = function(event) {
-            const modal = document.getElementById('archiveModal');
-            if (event.target === modal) {
-                hideArchiveModal();
-            }
-        }
-
         function changeEntries(entries) {
+            saveState();
             window.location.href = updateQueryString({ entries: entries, page: 1 });
         }
 
         function changePage(page) {
+            // Remove this line:
+            // currentPage = page;
+            // saveState(); // Remove this line as well
             window.location.href = updateQueryString({ page: page });
+        }
+
+        function clearLocalStorage() {
+            localStorage.removeItem('verticalScrollPosition');
+            localStorage.removeItem('horizontalScrollPosition');
         }
 
         let debounceTimer;
         function debounceSearch(value) {
             clearTimeout(debounceTimer);
             debounceTimer = setTimeout(() => {
+                saveState();
                 window.location.href = updateQueryString({ search: value, page: 1 });
             }, 300);
         }
 
-        function updateQueryString(params) {
-            const searchParams = new URLSearchParams(window.location.search);
-            for (const [key, value] of Object.entries(params)) {
-                searchParams.set(key, value);
-            }
-            return `${window.location.pathname}?${searchParams.toString()}`;
-        }
-
         function sortTable(column) {
+            saveState();
             const currentSort = '<?php echo $sort_column; ?>';
             const currentOrder = '<?php echo $sort_order; ?>';
             let newOrder = 'ASC';
@@ -853,36 +899,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['archive_id'])) {
                 newOrder = currentOrder === 'ASC' ? 'DESC' : 'ASC';
             }
 
-            window.location.href = updateQueryString({ sort: column, order: newOrder });
+            window.location.href = updateQueryString({ sort: column, order: newOrder, page: currentPage });
         }
 
         function resetSort() {
-            window.location.href = updateQueryString({ sort: 'id', order: 'ASC' });
+            saveState();
+            window.location.href = updateQueryString({ sort: 'id', order: 'ASC', page: currentPage });
         }
 
+        // Modify the links to switch between active and archived views
         document.addEventListener('DOMContentLoaded', function() {
-            const table = document.querySelector('table');
-            const scrollContainer = document.querySelector('.horizontal-scroll');
-            const scrollContent = scrollContainer.querySelector('.horizontal-scroll-content');
-
-            function updateScrollbar() {
-                const tableWidth = table.offsetWidth;
-                scrollContent.style.width = tableWidth + 'px';
-                // Ensure the scroll container doesn't exceed table width
-                tableScrollContainer.style.maxWidth = '100%';
+            const viewArchiveLink = document.querySelector('a[href="bm_archive.php"]');
+            const backToActiveLink = document.querySelector('a[href="barangay_midwifery.php"]');
+            
+            if (viewArchiveLink) {
+                viewArchiveLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    clearLocalStorage();
+                    window.location.href = 'bm_archive.php?page=1';
+                });
             }
-
-            updateScrollbar();
-            window.addEventListener('resize', updateScrollbar);
-
-            scrollContainer.addEventListener('scroll', function() {
-                table.style.transform = `translateX(-${scrollContainer.scrollLeft}px)`;
-            });
-
-            const tableScrollContainer = document.querySelector('.table-scroll-container');
-            tableScrollContainer.addEventListener('scroll', function() {
-                scrollContainer.scrollLeft = tableScrollContainer.scrollLeft;
-            });
+            
+            if (backToActiveLink) {
+                backToActiveLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    clearLocalStorage();
+                    window.location.href = 'barangay_midwifery.php?page=1';
+                });
+            }
         });
 
         document.addEventListener('DOMContentLoaded', function() {
@@ -900,10 +944,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['archive_id'])) {
 
             scrollContainer.addEventListener('scroll', function() {
                 tableScrollContainer.scrollLeft = scrollContainer.scrollLeft;
+                saveState();
             });
 
             tableScrollContainer.addEventListener('scroll', function() {
                 scrollContainer.scrollLeft = tableScrollContainer.scrollLeft;
+                saveState();
             });
 
             // Add mouse wheel horizontal scrolling
@@ -912,13 +958,67 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['archive_id'])) {
                     e.preventDefault();
                     tableScrollContainer.scrollLeft += e.deltaY;
                     scrollContainer.scrollLeft = tableScrollContainer.scrollLeft;
+                    saveState();
                 }
             });
 
             tableScrollContainer.addEventListener('mouseleave', function() {
                 this.style.outline = 'none';
             });
+
+            // Restore state after page load
+            restoreState();
+
+            // Add event listeners for pagination buttons
+            const paginationButtons = document.querySelectorAll('.pagination-button');
+            paginationButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const page = this.dataset.page;
+                    if (page) {
+                        changePage(page);
+                    }
+                });
+            });
+
+            // Save state before unload
+            window.addEventListener('beforeunload', saveState);
+
+            // Handle archive form submission
+            const archiveForm = document.getElementById('archive-form');
+            if (archiveForm) {
+                archiveForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const formData = new FormData(this);
+                    
+                    fetch(window.location.pathname, {
+                        method: 'POST',
+                        body: formData
+                    }).then(response => {
+                        if (response.ok) {
+                            // Hide the modal
+                            hideArchiveModal();
+                            // Reload the page content
+                            window.location.reload();
+                        } else {
+                            console.error('Archive operation failed');
+                            alert('Failed to archive the item. Please try again.');
+                        }
+                    }).catch(error => {
+                        console.error('Error:', error);
+                        alert('An error occurred. Please try again.');
+                    });
+                });
+            }
         });
+
+        // Handle modal close on outside click
+        window.onclick = function(event) {
+            const modal = document.getElementById('archiveModal');
+            if (event.target === modal) {
+                hideArchiveModal();
+            }
+        }
     </script>
 </body>
 </html>

@@ -324,13 +324,13 @@ $db->close();
                 <i class="fas fa-map-marker-alt card-icon"></i>
                 <h2 class="card-title">Purok Selection Form</h2>
                 <p class="card-description">Select and manage data for specific puroks in your area.</p>
-                <a href="#" class="access-form-btn">Access Form</a>
+                <a href="PSF/purok_selection.php" class="access-form-btn">Access Form</a>
             </div>
             <div class="card next" data-position="next">
                 <i class="fas fa-baby card-icon"></i>
                 <h2 class="card-title">Child Immunization Form</h2>
                 <p class="card-description">Track and manage child immunization records efficiently.</p>
-                <a href="#" class="access-form-btn">Access Form</a>
+                <a href="CIF/child_immunization.php" class="access-form-btn">Access Form</a>
             </div>
         </div>
         <div class="carousel-controls">

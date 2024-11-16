@@ -26,9 +26,9 @@ try {
     die("Database connection failed: " . $e->getMessage());
 }
 
-// Fetch data
+// Fetch data (only active items)
 try {
-    $query = "SELECT * FROM barangay_midwifery";
+    $query = "SELECT * FROM barangay_midwifery WHERE item_status = 'active'";
     $results = $db->query($query);
     $data = [];
     while ($row = $results->fetchArray(SQLITE3_ASSOC)) {
@@ -204,7 +204,6 @@ function exportSpreadsheet($data, $format, $options) {
     ob_end_clean(); // Clear output buffer
     $writer->save('php://output');
 }
-
 
 function exportPDF($data, $options) {
     if (!class_exists('TCPDF')) {
@@ -424,7 +423,6 @@ function exportPDF($data, $options) {
     $pdf->Output($options['filename'].'.pdf', 'D');
 }
 
-
 // Clear any remaining output buffer
 while (ob_get_level()) {
     ob_end_clean();
@@ -436,78 +434,111 @@ while (ob_get_level()) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Advanced Export Options</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <title>Barangay Midwifery Form - Export Options</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #4CAF50;
-            --primary-dark: #45a049;
-            --secondary-color: #2196F3;
-            --accent-color: #FF9800;
-            --error-color: #f44336;
-            --success-color: #4CAF50;
-            --background-color: #f8f9fa;
-            --surface-color: #ffffff;
-            --text-color: #333333;
-            --border-color: #e0e0e0;
-            --shadow-color: rgba(0, 0, 0, 0.1);
+            --primary-color: #6A5ACD;
+            --secondary-color: #9370DB;
+            --accent-color: #E6E6FA;
+            --text-color: #333;
+            --shadow-color: rgba(106, 90, 205, 0.3);
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
         }
 
         body {
-            font-family: 'Inter', sans-serif;
-            line-height: 1.6;
-            color: var(--text-color);
-            background-color: var(--background-color);
+            background: linear-gradient(135deg, #E6E6FA 0%, #9370DB 100%);
             min-height: 100vh;
-        }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 2rem;
+            display: flex;
+            flex-direction: column;
         }
 
         .header {
+            background-color: white;
+            padding: 0.75rem 2rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 2rem;
         }
 
-        .title {
-            font-size: 2rem;
-            font-weight: 600;
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo {
+            width: 40px;
+            height: 40px;
+            background-color: var(--primary-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo i {
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .site-title {
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            font-weight: 500;
+            line-height: 50px;
+            margin: 0;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: var(--text-color);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.875rem;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
             color: var(--primary-color);
         }
 
-        .back-button {
-            padding: 0.5rem 1rem;
-            background-color: var(--secondary-color);
-            color: white;
-            text-decoration: none;
-            border-radius: 4px;
-            transition: background-color 0.3s;
-        }
-
-        .back-button:hover {
-            background-color: #1976D2;
-        }
-
-        .export-panel {
-            background-color: var(--surface-color);
-            border-radius: 8px;
-            box-shadow: 0 2px 4px var(--shadow-color);
+        .container {
+            flex: 1;
+            max-width: 1200px;
+            margin: 2rem auto;
             padding: 2rem;
-            margin-bottom: 2rem;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
         }
 
-        .options-grid {
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 2.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .export-options {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 2rem;
@@ -515,17 +546,16 @@ while (ob_get_level()) {
         }
 
         .option-group {
-            background-color: #f8f9fa;
+            background-color: var(--accent-color);
             padding: 1.5rem;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
-        .option-group h3 {
-            margin-bottom: 1rem;
+        .option-group h2 {
             color: var(--primary-color);
-            font-size: 1.1rem;
-            font-weight: 600;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
         }
 
         .form-group {
@@ -536,6 +566,7 @@ while (ob_get_level()) {
             display: block;
             margin-bottom: 0.5rem;
             font-weight: 500;
+            color: var(--text-color);
         }
 
         input[type="text"],
@@ -543,24 +574,39 @@ while (ob_get_level()) {
         select {
             width: 100%;
             padding: 0.75rem;
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            font-size: 0.9rem;
-            transition: border-color 0.3s;
+            border: 2px solid var(--primary-color);
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
         }
 
         input[type="text"]:focus,
         input[type="number"]:focus,
         select:focus {
             outline: none;
-            border-color: var(--primary-color);
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 3px var(--shadow-color);
+        }
+
+        .button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 500;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .button:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
         }
 
         .preview-container {
-            background-color: var(--surface-color);
-            border-radius: 8px;
-            box-shadow: 0 2px 4px var(--shadow-color);
-            padding: 2rem;
+            margin-top: 2rem;
             overflow-x: auto;
         }
 
@@ -572,60 +618,50 @@ while (ob_get_level()) {
 
         .preview-table th,
         .preview-table td {
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--primary-color);
             padding: 0.75rem;
             text-align: left;
         }
 
         .preview-table th {
-            background-color: #f8f9fa;
+            background-color: var(--accent-color);
+            color: var(--primary-color);
             font-weight: 600;
         }
 
         .preview-table tr:nth-child(even) {
-            background-color: #f8f9fa;
+            background-color: #f8f8f8;
         }
 
-        .button-group {
+        .footer {
+            background-color: white;
+            padding: 1rem;
+            margin-top: auto;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .social-links {
             display: flex;
             gap: 1rem;
-            margin-top: 2rem;
         }
 
-        .button {
-            padding: 0.75rem 1.5rem;
-            border: none;
-            border-radius: 4px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s;
+        .social-links a {
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: color 0.3s ease;
+            font-size: 1.2rem;
         }
 
-        .button-primary {
-            background-color: var(--primary-color);
-            color: white;
-        }
-
-        .button-primary:hover {
-            background-color: var(--primary-dark);
-        }
-
-        .button-secondary {
-            background-color: var(--secondary-color);
-            color: white;
-        }
-
-        .button-secondary:hover {
-            background-color: #1976D2;
-        }
-
-        .button-accent {
-            background-color: var(--accent-color);
-            color: white;
-        }
-
-        .button-accent:hover {
-            background-color: #F57C00;
+        .social-links a:hover {
+            color: var(--secondary-color);
         }
 
         @media (max-width: 768px) {
@@ -633,115 +669,177 @@ while (ob_get_level()) {
                 padding: 1rem;
             }
 
-            .options-grid {
+            .export-options {
                 grid-template-columns: 1fr;
-            }
-
-            .button-group {
-                flex-direction: column;
-            }
-
-            .button {
-                width: 100%;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1 class="title">Advanced Export Options</h1>
-            <a href="barangay_midwifery.php" class="back-button">Back to Midwifery Form</a>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo-section">
+                <div class="logo">
+                    <i class="fas fa-venus-mars"></i>
+                </div>
+                <h1 class="site-title">Gender and Development Profiling System</h1>
+            </div>
+            <nav class="nav-links">
+                <a href="../index.php"><i class="fas fa-home"></i> Home</a>
+                <a href="#"><i class="fas fa-info-circle"></i> About</a>
+                <a href="#"><i class="fas fa-envelope"></i> Contact</a>
+            </nav>
         </div>
+    </header>
 
+    <div class="container">
+        <h1>Barangay Midwifery Form - Export Options</h1>
+        
         <form method="post" id="exportForm">
-            <div class="export-panel">
-                <div class="options-grid">
-                    <div class="option-group">
-                        <h3>Basic Settings</h3>
-                        <div class="form-group">
-                            <label for="filename">Filename:</label>
-                            <input type="text" id="filename" name="filename" value="barangay_midwifery_data" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="format">Export Format:</label>
-                            <select id="format" name="format" required onchange="updateOptions()">
-                                <option value="xlsx">Excel (XLSX)</option>
-                                <option value="csv">CSV</option>
-                                <option value="pdf">PDF</option>
-                            </select>
-                        </div>
+            <div class="export-options">
+                <div class="option-group">
+                    <h2>Basic Settings</h2>
+                    <div class="form-group">
+                        <label for="filename">Filename:</label>
+                        <input type="text" id="filename" name="filename" value="barangay_midwifery_data" required>
                     </div>
-
-                    <div class="option-group" id="spreadsheetOptions">
-                        <h3>Spreadsheet Options</h3>
-                        <div class="form-group">
-                            <label for="columnWidth">Base Column Width:</label>
-                            <input type="number" id="columnWidth" name="columnWidth" value="15" min="5" max="50">
-                        </div>
-                        <div class="form-group">
-                            <label for="fontSize">Font Size:</label>
-                            <input type="number" id="fontSize" name="fontSize" value="11" min="8" max="16">
-                        </div>
-                    </div>
-
-                    <div class="option-group" id="csvOptions" style="display: none;">
-                        <h3>CSV Options</h3>
-                        <div class="form-group">
-                            <label for="delimiter">Delimiter:</label>
-                            <select id="delimiter" name="delimiter">
-                                <option value=",">Comma (,)</option>
-                                <option value=";">Semicolon (;)</option>
-                                <option value="\t">Tab</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="enclosure">Text Enclosure:</label>
-                            <select id="enclosure" name="enclosure">
-                                <option value='"'>Double Quote (")</option>
-                                <option value="'">Single Quote (')</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="option-group" id="pdfOptions" style="display: none;">
-                        <h3>PDF Options</h3>
-                        <div class="form-group">
-                            <label for="customPageWidth">Custom Page Width (mm):</label>
-                            <input type="number" id="customPageWidth" name="customPageWidth" value="1188" min="100" max="2000">
-                        </div>
-                        <div class="form-group">
-                            <label for="customPageHeight">Custom Page Height (mm):</label>
-                            <input type="number" id="customPageHeight" name="customPageHeight" value="420" min="100" max="2000">
-                        </div>
-                        <div class="form-group">
-                            <label for="fontFamily">Font Family:</label>
-                            <select id="fontFamily" name="fontFamily">
-                                <option value="helvetica">Helvetica</option>
-                                <option value="times">Times New Roman</option>
-                                <option value="courier">Courier</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="fontSize">Font Size:</label>
-                            <input type="number" id="fontSize" name="fontSize" value="8" min="6" max="14">
-                        </div>
+                    <div class="form-group">
+                        <label for="format">Export Format:</label>
+                        <select id="format" name="format" required onchange="updateOptions()">
+                            <option value="xlsx">Excel (XLSX)</option>
+                            <option value="csv">CSV</option>
+                            <option value="pdf">PDF</option>
+                        </select>
                     </div>
                 </div>
 
-                <div class="button-group">
-                    <button type="submit" name="export" class="button button-primary">
-                        Export File
-                    </button>
+                <div class="option-group" id="spreadsheetOptions">
+                    <h2>Spreadsheet Options</h2>
+                    <div class="form-group">
+                        <label for="columnWidth">Base Column Width:</label>
+                        <input type="number" id="columnWidth" name="columnWidth" value="15" min="5" max="50">
+                    </div>
+                    <div class="form-group">
+                        <label for="fontSize">Font Size:</label>
+                        <input type="number" id="fontSize" name="fontSize" value="11" min="8" max="16">
+                    </div>
                 </div>
+
+                <div class="option-group" id="csvOptions" style="display: none;">
+                    <h2>CSV Options</h2>
+                    <div class="form-group">
+                        <label for="delimiter">Delimiter:</label>
+                        <select id="delimiter" name="delimiter">
+                            <option value=",">Comma (,)</option>
+                            <option value=";">Semicolon (;)</option>
+                            <option value="\t">Tab</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="enclosure">Text Enclosure:</label>
+                        <select id="enclosure" name="enclosure">
+                            <option value='"'>Double Quote (")</option>
+                            <option value="'">Single Quote (')</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="option-group" id="pdfOptions" style="display: none;">
+                    <h2>PDF Options</h2>
+                    <div class="form-group">
+                        <label for="customPageWidth">Custom Page Width (mm):</label>
+                        <input type="number" id="customPageWidth" name="customPageWidth" value="1188" min="100" max="2000">
+                    </div>
+                    <div class="form-group">
+                        <label for="customPageHeight">Custom Page Height (mm):</label>
+                        <input type="number" id="customPageHeight" name="customPageHeight" value="420" min="100" max="2000">
+                    </div>
+                    <div class="form-group">
+                        <label for="fontFamily">Font Family:</label>
+                        <select id="fontFamily" name="fontFamily">
+                            <option value="helvetica">Helvetica</option>
+                            <option value="times">Times New Roman</option>
+                            <option value="courier">Courier</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div style="text-align: center;">
+                <a href="barangay_midwifery.php" class="button" style="margin-right: 10px;">
+                    <i class="fas fa-arrow-left"></i> Back to Midwifery Form
+                </a>
+                <button type="submit" name="export" class="button">
+                    <i class="fas fa-file-export"></i> Export Data
+                </button>
             </div>
         </form>
 
         <div class="preview-container">
-            <h2>Preview</h2>
-            <div id="previewTable"></div>
+            <h2>Preview (First 10 Rows)</h2>
+            <table class="preview-table">
+                <thead>
+                    <tr>
+                        <th rowspan="3">Name</th>
+                        <th rowspan="3">Age</th>
+                        <th rowspan="3">Address</th>
+                        <th rowspan="3">LMP</th>
+                        <th rowspan="3">EDC</th>
+                        <th colspan="12">Prenatal Visits</th>
+                        <th rowspan="3">Date of Birth</th>
+                        <th rowspan="3">Sex</th>
+                        <th rowspan="3">Birth Weight</th>
+                        <th rowspan="3">Birth Length</th>
+                        <th rowspan="3">Place of Delivery</th>
+                    </tr>
+                    <tr>
+                        <th colspan="3">1st Trimester</th>
+                        <th colspan="3">2nd Trimester</th>
+                        <th colspan="6">3rd Trimester</th>
+                    </tr>
+                    <tr>
+                        <?php for ($i = 1; $i <= 12; $i++): ?>
+                            <th><?php echo $i; ?></th>
+                        <?php endfor; ?>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php
+                    $previewData = array_slice($data, 0, 10);
+                    foreach ($previewData as $row):
+                    ?>
+                    <tr>
+                        <td><?php echo htmlspecialchars($row['name']); ?></td>
+                        <td><?php echo htmlspecialchars($row['age']); ?></td>
+                        <td><?php echo htmlspecialchars($row['address']); ?></td>
+                        <td><?php echo htmlspecialchars($row['lmp']); ?></td>
+                        <td><?php echo htmlspecialchars($row['edc']); ?></td>
+                        <?php for ($i = 0; $i < 12; $i++): ?>
+                            <td><?php echo htmlspecialchars($row['prenatal_visits'][$i] ?? ''); ?></td>
+                        <?php endfor; ?>
+                        <td><?php echo htmlspecialchars($row['date_of_birth']); ?></td>
+                        <td><?php echo htmlspecialchars($row['sex']); ?></td>
+                        <td><?php echo htmlspecialchars($row['birth_weight']); ?></td>
+                        <td><?php echo htmlspecialchars($row['birth_length']); ?></td>
+                        <td><?php echo htmlspecialchars($row['place_of_delivery']); ?></td>
+                    </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
         </div>
     </div>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="social-links">
+                <a href="#"><i class="fab fa-facebook"></i></a>
+                <a href="#"><i class="fab fa-twitter"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+                <a href="#"><i class="fab fa-linkedin"></i></a>
+            </div>
+            <p>&copy; 2024 Gender and Development Profiling System. All rights reserved.</p>
+        </div>
+    </footer>
 
     <script>
         function updateOptions() {
@@ -753,71 +851,10 @@ while (ob_get_level()) {
             spreadsheetOptions.style.display = format === 'xlsx' ? 'block' : 'none';
             csvOptions.style.display = format === 'csv' ? 'block' : 'none';
             pdfOptions.style.display = format === 'pdf' ? 'block' : 'none';
-            
-            updatePreview();
         }
 
-        function updatePreview() {
-            const previewData = <?php echo json_encode(array_slice($data, 0, 5)); ?>;
-            const previewTable = document.getElementById('previewTable');
-            
-            let table = '<table class="preview-table">';
-            
-            // Headers
-            table += `
-                <tr>
-                    <th rowspan="3">Name</th>
-                    <th rowspan="3">Age</th>
-                    <th rowspan="3">Address</th>
-                    <th rowspan="3">LMP</th>
-                    <th rowspan="3">EDC</th>
-                    <th colspan="12">Prenatal Visits</th>
-                    <th rowspan="3">Date of Birth</th>
-                    <th rowspan="3">Sex</th>
-                    <th rowspan="3">Birth Weight</th>
-                    <th rowspan="3">Birth Length</th>
-                    <th rowspan="3">Place of Delivery</th>
-                </tr>
-                <tr>
-                    <th colspan="3">1st Trimester</th>
-                    <th colspan="3">2nd Trimester</th>
-                    <th colspan="6">3rd Trimester</th>
-                </tr>
-                <tr>
-                    ${Array.from({length: 12}, (_, i) => `<th>${i + 1}</th>`).join('')}
-                </tr>
-            `;
-            
-            // Data rows
-            previewData.forEach(row => {
-                table += `
-                    <tr>
-                        <td>${row.name}</td>
-                        <td>${row.age}</td>
-                        <td>${row.address}</td>
-                        <td>${row.lmp}</td>
-                        <td>${row.edc}</td>
-                        ${row.prenatal_visits.map(visit => `<td>${visit || ''}</td>`).join('')}
-                        <td>${row.date_of_birth}</td>
-                        <td>${row.sex}</td>
-                        <td>${row.birth_weight}</td>
-                        <td>${row.birth_length}</td>
-                        <td>${row.place_of_delivery}</td>
-                    </tr>
-                `;
-            });
-            
-            table += '</table>';
-            previewTable.innerHTML = table;
-        }
-
-        // Initial preview and options update
+        // Initial call to set the correct options visibility
         updateOptions();
-
-        // Add event listeners to form inputs for automatic preview update
-        document.querySelectorAll('#exportForm input, #exportForm select').forEach(element => {
-            element.addEventListener('change', updatePreview);
-        });
     </script>
 </body>
 </html>

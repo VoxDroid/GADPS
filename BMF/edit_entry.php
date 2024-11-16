@@ -48,87 +48,263 @@ $prenatal_visits = json_decode($entry['prenatal_visits'], true);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Entry - Barangay Midwifery Form</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            margin: 0;
-            padding: 20px;
+        :root {
+            --primary-color: #6A5ACD;
+            --secondary-color: #9370DB;
+            --accent-color: #E6E6FA;
+            --text-color: #333;
+            --shadow-color: rgba(106, 90, 205, 0.3);
         }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #E6E6FA 0%, #9370DB 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background-color: white;
+            padding: 0.75rem 2rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo {
+            width: 40px;
+            height: 40px;
+            background-color: var(--primary-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo i {
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .site-title {
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            font-weight: 500;
+            line-height: 50px;
+            margin: 0;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: var(--text-color);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.875rem;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-color);
+        }
+
         .container {
-            background-color: rgba(255, 255, 255, 0.9);
+            flex: 1;
+            background: linear-gradient(145deg, #ffffff, #f6f7ff);
             border-radius: 20px;
             padding: 40px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            max-width: 800px;
-            margin: 0 auto;
+            box-shadow: 
+                0 10px 30px rgba(0, 0, 0, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.6);
+            width: 95%;
+            max-width: 1000px;
+            margin: 2rem auto;
+            overflow: hidden;
+            position: relative;
         }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            border-radius: 20px 20px 0 0;
+        }
+
         h1 {
-            color: #3a3a3a;
+            color: var(--primary-color);
             text-align: center;
             margin-bottom: 30px;
+            font-size: 2.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
         }
+
         .form-group {
             margin-bottom: 20px;
         }
+
         label {
             display: block;
             margin-bottom: 5px;
-            font-weight: 600;
-            color: #4a5568;
+            font-weight: 500;
+            color: var(--text-color);
         }
+
         input, select {
             width: 100%;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box;
+            padding: 10px;
+            border: 2px solid var(--accent-color);
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
         }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px var(--shadow-color);
+        }
+
         .prenatal-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 20px;
             margin-bottom: 20px;
         }
+
         .trimester {
-            background: #f5f5f5;
-            padding: 15px;
-            border-radius: 8px;
+            background: var(--accent-color);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
+
         .trimester h3 {
             margin-top: 0;
-            color: #4CAF50;
+            color: var(--primary-color);
             text-align: center;
             padding-bottom: 10px;
-            border-bottom: 2px solid #4CAF50;
+            border-bottom: 2px solid var(--primary-color);
+            margin-bottom: 15px;
         }
+
         .button {
-            background-color: #4CAF50;
+            background-color: var(--primary-color);
             border: none;
             color: white;
-            padding: 10px 20px;
+            padding: 12px 24px;
             text-align: center;
             text-decoration: none;
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
             font-size: 16px;
-            margin: 4px 2px;
+            margin: 4px 8px;
             cursor: pointer;
-            border-radius: 12px;
+            border-radius: 8px;
             transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
         }
+
+        .button i {
+            margin-right: 8px;
+        }
+
         .button:hover {
-            background-color: #45a049;
-            transform: translateY(-3px);
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
+
         .button-container {
             text-align: center;
-            margin-top: 20px;
+            margin-top: 30px;
+        }
+
+        .footer {
+            background-color: white;
+            padding: 1rem;
+            margin-top: auto;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .social-links a {
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: color 0.3s ease;
+            font-size: 1.2rem;
+        }
+
+        .social-links a:hover {
+            color: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .prenatal-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo-section">
+                <div class="logo">
+                    <i class="fas fa-venus-mars"></i>
+                </div>
+                <h1 class="site-title">Gender and Development Profiling System</h1>
+            </div>
+            <nav class="nav-links">
+                <a href="../index.php"><i class="fas fa-home"></i> Home</a>
+                <a href="#"><i class="fas fa-info-circle"></i> About</a>
+                <a href="#"><i class="fas fa-envelope"></i> Contact</a>
+            </nav>
+        </div>
+    </header>
+
     <div class="container">
         <h1>Edit Entry</h1>
         <form method="POST">
@@ -206,6 +382,7 @@ $prenatal_visits = json_decode($entry['prenatal_visits'], true);
             <div class="form-group">
                 <label for="sex">Sex:</label>
                 <select id="sex" name="sex">
+                    <option value="not_specified" <?php echo $entry['sex'] === 'not_specified' ? 'selected' : ''; ?>>Not Specified</option>
                     <option value="male" <?php echo $entry['sex'] === 'male' ? 'selected' : ''; ?>>Male</option>
                     <option value="female" <?php echo $entry['sex'] === 'female' ? 'selected' : ''; ?>>Female</option>
                 </select>
@@ -226,18 +403,32 @@ $prenatal_visits = json_decode($entry['prenatal_visits'], true);
             <div class="form-group">
                 <label for="place_of_delivery">Place of Delivery:</label>
                 <select id="place_of_delivery" name="place_of_delivery">
+                    <option value="not_specified" <?php echo $entry['place_of_delivery'] === 'not_specified' ? 'selected' : ''; ?>>Not Specified</option>
                     <option value="hospital" <?php echo $entry['place_of_delivery'] === 'hospital' ? 'selected' : ''; ?>>Hospital</option>
                     <option value="rhu" <?php echo $entry['place_of_delivery'] === 'rhu' ? 'selected' : ''; ?>>RHU</option>
                     <option value="lying_in" <?php echo $entry['place_of_delivery'] === 'lying_in' ? 'selected' : ''; ?>>Lying In</option>
                     <option value="home" <?php echo $entry['place_of_delivery'] === 'home' ? 'selected' : ''; ?>>Home</option>
+                    <option value="other" <?php echo $entry['place_of_delivery'] === 'other' ? 'selected' : ''; ?>>Other</option>
                 </select>
             </div>
 
             <div class="button-container">
-                <a href="barangay_midwifery.php" class="button">Cancel</a>
-                <button type="submit" class="button">Save Changes</button>
+                <a href="barangay_midwifery.php" class="button"><i class="fas fa-times"></i> Cancel</a>
+                <button type="submit" class="button"><i class="fas fa-save"></i> Save Changes</button>
             </div>
         </form>
     </div>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="social-links">
+                <a href="#"><i class="fab fa-facebook"></i></a>
+                <a href="#"><i class="fab fa-twitter"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+                <a href="#"><i class="fab fa-linkedin"></i></a>
+            </div>
+            <p>&copy; 2024 Gender and Development Profiling System. All rights reserved.</p>
+        </div>
+    </footer>
 </body>
 </html>
