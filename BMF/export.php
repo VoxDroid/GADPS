@@ -95,6 +95,7 @@ function exportSpreadsheet($data, $format, $options) {
     }
     
     // Style configuration
+    $headerColor = $options['headerColor'] ?? '#E2EFDA';
     $headerStyle = [
         'font' => [
             'bold' => true,
@@ -112,7 +113,7 @@ function exportSpreadsheet($data, $format, $options) {
         ],
         'fill' => [
             'fillType' => Fill::FILL_SOLID,
-            'startColor' => ['rgb' => 'E2EFDA'],
+            'startColor' => ['rgb' => substr($headerColor, 1)],
         ],
     ];
     
@@ -272,7 +273,9 @@ function exportPDF($data, $options) {
     $subHeaderHeight = 10;
     
     // Main headers
-    $pdf->SetFillColor(226, 239, 218);
+    $headerColor = $options['pdfHeaderColor'] ?? '#E2EFDA';
+    list($r, $g, $b) = sscanf($headerColor, "#%02x%02x%02x");
+    $pdf->SetFillColor($r, $g, $b);
     $pdf->SetTextColor(0);
     $pdf->SetDrawColor(128, 128, 128);
     $pdf->SetLineWidth(0.3);
@@ -324,7 +327,7 @@ function exportPDF($data, $options) {
             $prenatalVisitWidth = $pageWidth * 0.36;
         
             // Main headers
-            $pdf->SetFillColor(226, 239, 218);
+            $pdf->SetFillColor($r, $g, $b);
             $pdf->SetTextColor(0);
             $pdf->SetDrawColor(128, 128, 128);
             $pdf->SetLineWidth(0.3);
@@ -437,89 +440,8 @@ while (ob_get_level()) {
     <title>Barangay Midwifery Form - Export Options</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/main.css">
     <style>
-        :root {
-            --primary-color: #6A5ACD;
-            --secondary-color: #9370DB;
-            --accent-color: #E6E6FA;
-            --text-color: #333;
-            --shadow-color: rgba(106, 90, 205, 0.3);
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
-        }
-
-        body {
-            background: linear-gradient(135deg, #E6E6FA 0%, #9370DB 100%);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .header {
-            background-color: white;
-            padding: 0.75rem 2rem;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .header-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo-section {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-
-        .logo {
-            width: 40px;
-            height: 40px;
-            background-color: var(--primary-color);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .logo i {
-            color: white;
-            font-size: 1.2rem;
-        }
-
-        .site-title {
-            color: var(--primary-color);
-            font-size: 1.5rem;
-            font-weight: 500;
-            line-height: 50px;
-            margin: 0;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 2rem;
-        }
-
-        .nav-links a {
-            color: var(--text-color);
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 0.875rem;
-            transition: color 0.3s ease;
-        }
-
-        .nav-links a:hover {
-            color: var(--primary-color);
-        }
-
         .container {
             flex: 1;
             max-width: 1200px;
@@ -528,6 +450,12 @@ while (ob_get_level()) {
             background: white;
             border-radius: 20px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         h1 {
@@ -550,12 +478,21 @@ while (ob_get_level()) {
             padding: 1.5rem;
             border-radius: 10px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .option-group:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
         }
 
         .option-group h2 {
             color: var(--primary-color);
             margin-bottom: 1rem;
             font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
         .form-group {
@@ -571,21 +508,29 @@ while (ob_get_level()) {
 
         input[type="text"],
         input[type="number"],
+        input[type="color"],
         select {
             width: 100%;
             padding: 0.75rem;
             border: 2px solid var(--primary-color);
             border-radius: 5px;
             font-size: 1rem;
-            transition: border-color 0.3s ease;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
         }
 
         input[type="text"]:focus,
         input[type="number"]:focus,
+        input[type="color"]:focus,
         select:focus {
             outline: none;
             border-color: var(--secondary-color);
             box-shadow: 0 0 0 3px var(--shadow-color);
+        }
+
+        input[type="color"] {
+            height: 40px;
+            padding: 5px;
+            cursor: pointer;
         }
 
         .button {
@@ -597,71 +542,102 @@ while (ob_get_level()) {
             font-weight: 500;
             border-radius: 5px;
             cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.3s ease;
+            transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            text-decoration: none;
         }
 
         .button:hover {
             background-color: var(--secondary-color);
             transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
         .preview-container {
             margin-top: 2rem;
+            overflow: hidden;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .preview-header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .preview-header h2 {
+            margin: 0;
+            font-size: 1.2rem;
+        }
+
+        .table-wrapper {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .table-scroll-container {
             overflow-x: auto;
+            margin-bottom: 16px;
+        }
+
+        .horizontal-scroll {
+            height: 12px;
+            overflow-x: auto;
+            overflow-y: hidden;
+        }
+
+        .horizontal-scroll-content {
+            height: 1px;
         }
 
         .preview-table {
             width: 100%;
-            border-collapse: collapse;
+            border-collapse: separate;
+            border-spacing: 0;
             font-size: 0.9rem;
         }
 
         .preview-table th,
         .preview-table td {
-            border: 1px solid var(--primary-color);
+            border: 1px solid #e2e8f0;
             padding: 0.75rem;
             text-align: left;
         }
 
         .preview-table th {
-            background-color: var(--accent-color);
-            color: var(--primary-color);
+            background-color: #f7fafc;
             font-weight: 600;
-        }
-
-        .preview-table tr:nth-child(even) {
-            background-color: #f8f8f8;
-        }
-
-        .footer {
-            background-color: white;
-            padding: 1rem;
-            margin-top: auto;
-            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .footer-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .social-links {
-            display: flex;
-            gap: 1rem;
-        }
-
-        .social-links a {
             color: var(--primary-color);
-            text-decoration: none;
-            transition: color 0.3s ease;
-            font-size: 1.2rem;
+            position: sticky;
+            top: 0;
+            z-index: 10;
         }
 
-        .social-links a:hover {
-            color: var(--secondary-color);
+        .preview-table th:first-child,
+        .preview-table td:first-child {
+            position: sticky;
+            left: 0;
+            z-index: 20;
+            background-color: white;
+        }
+
+        .preview-table th:first-child {
+            z-index: 30;
+        }
+
+        .preview-table tbody tr:nth-child(even) {
+            background-color: #f7fafc;
+        }
+
+        .preview-table tbody tr:hover {
+            background-color: #edf2f7;
         }
 
         @media (max-width: 768px) {
@@ -673,32 +649,27 @@ while (ob_get_level()) {
                 grid-template-columns: 1fr;
             }
         }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
     </style>
 </head>
 <body>
-    <header class="header">
-        <div class="header-content">
-            <div class="logo-section">
-                <div class="logo">
-                    <i class="fas fa-venus-mars"></i>
-                </div>
-                <h1 class="site-title">Gender and Development Profiling System</h1>
-            </div>
-            <nav class="nav-links">
-                <a href="../index.php"><i class="fas fa-home"></i> Home</a>
-                <a href="#"><i class="fas fa-info-circle"></i> About</a>
-                <a href="#"><i class="fas fa-envelope"></i> Contact</a>
-            </nav>
-        </div>
-    </header>
+    <?php include '../assets/html/header.html'; ?>
 
-    <div class="container">
+    <div class="container fade-in">
         <h1>Barangay Midwifery Form - Export Options</h1>
         
         <form method="post" id="exportForm">
             <div class="export-options">
                 <div class="option-group">
-                    <h2>Basic Settings</h2>
+                    <h2><i class="fas fa-cog"></i> Basic Settings</h2>
                     <div class="form-group">
                         <label for="filename">Filename:</label>
                         <input type="text" id="filename" name="filename" value="barangay_midwifery_data" required>
@@ -714,7 +685,7 @@ while (ob_get_level()) {
                 </div>
 
                 <div class="option-group" id="spreadsheetOptions">
-                    <h2>Spreadsheet Options</h2>
+                    <h2><i class="fas fa-table"></i> Spreadsheet Options</h2>
                     <div class="form-group">
                         <label for="columnWidth">Base Column Width:</label>
                         <input type="number" id="columnWidth" name="columnWidth" value="15" min="5" max="50">
@@ -723,10 +694,14 @@ while (ob_get_level()) {
                         <label for="fontSize">Font Size:</label>
                         <input type="number" id="fontSize" name="fontSize" value="11" min="8" max="16">
                     </div>
+                    <div class="form-group">
+                        <label for="headerColor">Header Color:</label>
+                        <input type="color" id="headerColor" name="headerColor" value="#E2EFDA">
+                    </div>
                 </div>
 
                 <div class="option-group" id="csvOptions" style="display: none;">
-                    <h2>CSV Options</h2>
+                    <h2><i class="fas fa-file-csv"></i> CSV Options</h2>
                     <div class="form-group">
                         <label for="delimiter">Delimiter:</label>
                         <select id="delimiter" name="delimiter">
@@ -742,10 +717,14 @@ while (ob_get_level()) {
                             <option value="'">Single Quote (')</option>
                         </select>
                     </div>
+                    <div class="form-group">
+                        <label for="csvHeaderColor">Header Color:</label>
+                        <input type="color" id="csvHeaderColor" name="csvHeaderColor" value="#E2EFDA">
+                    </div>
                 </div>
 
                 <div class="option-group" id="pdfOptions" style="display: none;">
-                    <h2>PDF Options</h2>
+                    <h2><i class="fas fa-file-pdf"></i> PDF Options</h2>
                     <div class="form-group">
                         <label for="customPageWidth">Custom Page Width (mm):</label>
                         <input type="number" id="customPageWidth" name="customPageWidth" value="1188" min="100" max="2000">
@@ -757,10 +736,25 @@ while (ob_get_level()) {
                     <div class="form-group">
                         <label for="fontFamily">Font Family:</label>
                         <select id="fontFamily" name="fontFamily">
-                            <option value="helvetica">Helvetica</option>
-                            <option value="times">Times New Roman</option>
-                            <option value="courier">Courier</option>
+                            <?php
+                            $fontDirectory = '../vendor/tecnickcom/tcpdf/fonts';
+                            $defaultFont = 'helvetica';
+                            if (is_dir($fontDirectory)) {
+                                $fonts = array_diff(scandir($fontDirectory), array('.', '..'));
+                                foreach ($fonts as $fontFile) {
+                                    $fontName = pathinfo($fontFile, PATHINFO_FILENAME);
+                                    if (pathinfo($fontFile, PATHINFO_EXTENSION) === 'php') {
+                                        $isSelected = ($fontName === $defaultFont) ? 'selected' : '';
+                                        echo '<option value="' . htmlspecialchars($fontName) . '" ' . $isSelected . '>' . htmlspecialchars(ucwords($fontName)) . '</option>';
+                                    }
+                                }
+                            }
+                            ?>
                         </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="pdfHeaderColor">Header Color:</label>
+                        <input type="color" id="pdfHeaderColor" name="pdfHeaderColor" value="#E2EFDA">
                     </div>
                 </div>
             </div>
@@ -776,70 +770,70 @@ while (ob_get_level()) {
         </form>
 
         <div class="preview-container">
-            <h2>Preview (First 10 Rows)</h2>
-            <table class="preview-table">
-                <thead>
-                    <tr>
-                        <th rowspan="3">Name</th>
-                        <th rowspan="3">Age</th>
-                        <th rowspan="3">Address</th>
-                        <th rowspan="3">LMP</th>
-                        <th rowspan="3">EDC</th>
-                        <th colspan="12">Prenatal Visits</th>
-                        <th rowspan="3">Date of Birth</th>
-                        <th rowspan="3">Sex</th>
-                        <th rowspan="3">Birth Weight</th>
-                        <th rowspan="3">Birth Length</th>
-                        <th rowspan="3">Place of Delivery</th>
-                    </tr>
-                    <tr>
-                        <th colspan="3">1st Trimester</th>
-                        <th colspan="3">2nd Trimester</th>
-                        <th colspan="6">3rd Trimester</th>
-                    </tr>
-                    <tr>
-                        <?php for ($i = 1; $i <= 12; $i++): ?>
-                            <th><?php echo $i; ?></th>
-                        <?php endfor; ?>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php
-                    $previewData = array_slice($data, 0, 10);
-                    foreach ($previewData as $row):
-                    ?>
-                    <tr>
-                        <td><?php echo htmlspecialchars($row['name']); ?></td>
-                        <td><?php echo htmlspecialchars($row['age']); ?></td>
-                        <td><?php echo htmlspecialchars($row['address']); ?></td>
-                        <td><?php echo htmlspecialchars($row['lmp']); ?></td>
-                        <td><?php echo htmlspecialchars($row['edc']); ?></td>
-                        <?php for ($i = 0; $i < 12; $i++): ?>
-                            <td><?php echo htmlspecialchars($row['prenatal_visits'][$i] ?? ''); ?></td>
-                        <?php endfor; ?>
-                        <td><?php echo htmlspecialchars($row['date_of_birth']); ?></td>
-                        <td><?php echo htmlspecialchars($row['sex']); ?></td>
-                        <td><?php echo htmlspecialchars($row['birth_weight']); ?></td>
-                        <td><?php echo htmlspecialchars($row['birth_length']); ?></td>
-                        <td><?php echo htmlspecialchars($row['place_of_delivery']); ?></td>
-                    </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
+            <div class="preview-header">
+                <i class="fas fa-eye"></i>
+                <h2>Preview (First 10 Rows)</h2>
+            </div>
+            <div class="table-wrapper">
+                <div class="table-scroll-container">
+                    <table class="preview-table">
+                        <thead>
+                            <tr>
+                                <th rowspan="3">Name</th>
+                                <th rowspan="3">Age</th>
+                                <th rowspan="3">Address</th>
+                                <th rowspan="3">LMP</th>
+                                <th rowspan="3">EDC</th>
+                                <th colspan="12">Prenatal Visits</th>
+                                <th rowspan="3">Date of Birth</th>
+                                <th rowspan="3">Sex</th>
+                                <th rowspan="3">Birth Weight</th>
+                                <th rowspan="3">Birth Length</th>
+                                <th rowspan="3">Place of Delivery</th>
+                            </tr>
+                            <tr>
+                                <th colspan="3">1st Trimester</th>
+                                <th colspan="3">2nd Trimester</th>
+                                <th colspan="6">3rd Trimester</th>
+                            </tr>
+                            <tr>
+                                <?php for ($i = 1; $i <= 12; $i++): ?>
+                                    <th><?php echo $i; ?></th>
+                                <?php endfor; ?>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php
+                            $previewData = array_slice($data, 0, 10);
+                            foreach ($previewData as $row):
+                            ?>
+                            <tr>
+                                <td><?php echo htmlspecialchars($row['name']); ?></td>
+                                <td><?php echo htmlspecialchars($row['age']); ?></td>
+                                <td><?php echo htmlspecialchars($row['address']); ?></td>
+                                <td><?php echo htmlspecialchars($row['lmp']); ?></td>
+                                <td><?php echo htmlspecialchars($row['edc']); ?></td>
+                                <?php for ($i = 0; $i < 12; $i++): ?>
+                                    <td><?php echo htmlspecialchars($row['prenatal_visits'][$i] ?? ''); ?></td>
+                                <?php endfor; ?>
+                                <td><?php echo htmlspecialchars($row['date_of_birth']); ?></td>
+                                <td><?php echo htmlspecialchars($row['sex']); ?></td>
+                                <td><?php echo htmlspecialchars($row['birth_weight']); ?></td>
+                                <td><?php echo htmlspecialchars($row['birth_length']); ?></td>
+                                <td><?php echo htmlspecialchars($row['place_of_delivery']); ?></td>
+                            </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="horizontal-scroll">
+                    <div class="horizontal-scroll-content"></div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <footer class="footer">
-        <div class="footer-content">
-            <div class="social-links">
-                <a href="#"><i class="fab fa-facebook"></i></a>
-                <a href="#"><i class="fab fa-twitter"></i></a>
-                <a href="#"><i class="fab fa-instagram"></i></a>
-                <a href="#"><i class="fab fa-linkedin"></i></a>
-            </div>
-            <p>&copy; 2024 Gender and Development Profiling System. All rights reserved.</p>
-        </div>
-    </footer>
+    <?php include '../assets/html/footer.html'; ?>
 
     <script>
         function updateOptions() {
@@ -852,6 +846,32 @@ while (ob_get_level()) {
             csvOptions.style.display = format === 'csv' ? 'block' : 'none';
             pdfOptions.style.display = format === 'pdf' ? 'block' : 'none';
         }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const tableScrollContainer = document.querySelector('.table-scroll-container');
+            const horizontalScroll = document.querySelector('.horizontal-scroll');
+            const horizontalScrollContent = document.querySelector('.horizontal-scroll-content');
+
+            function updateScrollbarWidth() {
+                const tableWidth = tableScrollContainer.scrollWidth;
+                horizontalScrollContent.style.width = tableWidth + 'px';
+            }
+
+            updateScrollbarWidth();
+            window.addEventListener('resize', updateScrollbarWidth);
+
+            tableScrollContainer.addEventListener('wheel', function(e) {
+                if (e.deltaY !== 0) {
+                    e.preventDefault();
+                    this.scrollLeft += e.deltaY;
+                    horizontalScroll.scrollLeft = this.scrollLeft;
+                }
+            });
+
+            horizontalScroll.addEventListener('scroll', function() {
+                tableScrollContainer.scrollLeft = this.scrollLeft;
+            });
+        });
 
         // Initial call to set the correct options visibility
         updateOptions();

@@ -72,109 +72,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['archive_id'])) {
     <title>Barangay Midwifery Form</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/main.css">
     <style>
-        :root {
-            --primary-color: #6A5ACD;
-            --secondary-color: #9370DB;
-            --accent-color: #E6E6FA;
-            --text-color: #333;
-            --shadow-color: rgba(106, 90, 205, 0.3);
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
-        }
-
-        ::-webkit-scrollbar {
-            width: 16px;
-            height: 16px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: var(--accent-color);
-            border-radius: 8px;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background-color: var(--primary-color);
-            border-radius: 8px;
-            border: 4px solid var(--accent-color);
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background-color: var(--secondary-color);
-        }
-
-        body {
-            background: linear-gradient(135deg, #E6E6FA 0%, #9370DB 100%);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .header {
-            background-color: white;
-            padding: 0.75rem 2rem;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .header-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo-section {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-
-        .logo {
-            width: 40px;
-            height: 40px;
-            background-color: var(--primary-color);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .logo i {
-            color: white;
-            font-size: 1.2rem;
-        }
-
-        .site-title {
-            color: var(--primary-color);
-            font-size: 1.5rem;
-            font-weight: 500;
-            line-height: 50px;
-            margin: 0;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 2rem;
-        }
-
-        .nav-links a {
-            color: var(--text-color);
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 0.875rem;
-            transition: color 0.3s ease;
-        }
-
-        .nav-links a:hover {
-            color: var(--primary-color);
-        }
-
         .container {
             flex: 1;
             background: linear-gradient(145deg, #ffffff, #f6f7ff);
@@ -187,6 +86,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['archive_id'])) {
             margin: 2rem auto;
             overflow: hidden;
             position: relative;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .container::before {
@@ -363,10 +268,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['archive_id'])) {
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
         }
 
+        .total-entries {
+            background-color: var(--accent-color);
+            color: var(--primary-color);
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            margin-right: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
         .search-container {
             display: flex;
             gap: 10px;
             align-items: center;
+            flex-wrap: wrap;
         }
 
         .search-input {
@@ -484,38 +400,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['archive_id'])) {
             background-color: #f7fafc !important;
         }
 
-        .footer {
-            background-color: white;
-            padding: 1rem;
-            margin-top: auto;
-            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .footer-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .social-links {
-            display: flex;
-            gap: 1rem;
-        }
-
-        .social-links a {
-            color: var(--primary-color);
-            text-decoration: none;
-            transition: color 0.3s ease;
-            font-size: 1.2rem;
-        }
-
-        .social-links a:hover {
-            color: var(--secondary-color);
-            transform: translateY(-2px);
-        }
-
         .table-wrapper {
             position: relative;
         }
@@ -581,21 +465,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['archive_id'])) {
     </style>
 </head>
 <body>
-    <header class="header">
-        <div class="header-content">
-            <div class="logo-section">
-                <div class="logo">
-                    <i class="fas fa-venus-mars"></i>
-                </div>
-                <h1 class="site-title">Gender and Development Profiling System</h1>
-            </div>
-            <nav class="nav-links">
-                <a href="../index.php"><i class="fas fa-home"></i> Home</a>
-                <a href="#"><i class="fas fa-info-circle"></i> About</a>
-                <a href="#"><i class="fas fa-envelope"></i> Contact</a>
-            </nav>
-        </div>
-    </header>
+    <?php include '../assets/html/header.html'; ?>
 
     <div class="container">
         <h1>Barangay Midwifery Form</h1>
@@ -609,6 +479,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['archive_id'])) {
             </div>
             
             <div class="search-container">
+                <span class="total-entries">Total Active Entries: <?php echo $total_entries; ?></span>
                 <select class="entries-select" onchange="changeEntries(this.value)">
                     <?php
                     $options = [10, 20, 30, 40, 50];
@@ -621,7 +492,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['archive_id'])) {
                 
                 <input type="text" 
                        class="search-input" 
-                       placeholder="Search by name or address..." 
+                       placeholder="Search..." 
                        value="<?php echo htmlspecialchars($search); ?>"
                        onkeyup="debounceSearch(this.value)">
                 <i class="fas fa-search" style="color: var(--primary-color);"></i>
@@ -789,17 +660,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['archive_id'])) {
         </div>
     </div>
 
-    <footer class="footer">
-        <div class="footer-content">
-            <div class="social-links">
-                <a href="#"><i class="fab fa-facebook"></i></a>
-                <a href="#"><i class="fab fa-twitter"></i></a>
-                <a href="#"><i class="fab fa-instagram"></i></a>
-                <a href="#"><i class="fab fa-linkedin"></i></a>
-            </div>
-            <p>&copy; 2024 Gender and Development Profiling System. All rights reserved.</p>
-        </div>
-    </footer>
+    <?php include '../assets/html/footer.html'; ?>
 
     <script>
         // Store the current scroll positions and page number

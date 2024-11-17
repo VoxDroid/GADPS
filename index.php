@@ -21,6 +21,29 @@ $db->exec("CREATE TABLE IF NOT EXISTS barangay_midwifery (
     item_status TEXT DEFAULT 'active'
 )");
 
+$db->exec("CREATE TABLE IF NOT EXISTS purok_selection (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    birthday DATE,
+    age INTEGER,
+    gender TEXT,
+    civil_status TEXT,
+    occupation TEXT,
+    sc BOOLEAN,
+    pwd BOOLEAN,
+    hypertension BOOLEAN,
+    diabetes BOOLEAN,
+    f_planning BOOLEAN,
+    t_pregnancy BOOLEAN,
+    poso BOOLEAN,
+    nawasa BOOLEAN,
+    mineral BOOLEAN,
+    segregation BOOLEAN,
+    composition BOOLEAN,
+    purok INTEGER,
+    item_status TEXT DEFAULT 'active'
+)");
+
 // Close the database connection
 $db->close();
 ?>
@@ -33,89 +56,8 @@ $db->close();
     <title>Gender and Development Profiling System</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/main.css">
     <style>
-        :root {
-            --primary-color: #6A5ACD;
-            --secondary-color: #9370DB;
-            --accent-color: #E6E6FA;
-            --text-color: #333;
-            --shadow-color: rgba(106, 90, 205, 0.3);
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #E6E6FA 0%, #9370DB 100%);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .header {
-            background-color: white;
-            padding: 0.75rem 2rem;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .header-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo-section {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-
-        .logo {
-            width: 40px;
-            height: 40px;
-            background-color: var(--primary-color);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .logo i {
-            color: white;
-            font-size: 1.2rem;
-        }
-
-        .site-title {
-            color: var(--primary-color);
-            font-size: 1.5rem;
-            font-weight: 500;
-            line-height: 50px;
-            margin: 0;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 2rem;
-        }
-
-        .nav-links a {
-            color: var(--text-color);
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 0.875rem;
-            transition: color 0.3s ease;
-        }
-
-        .nav-links a:hover {
-            color: var(--primary-color);
-        }
-
         .carousel-section {
             flex: 1;
             display: flex;
@@ -242,35 +184,6 @@ $db->close();
             background-color: var(--secondary-color);
         }
 
-        .footer {
-            background-color: white;
-            padding: 1rem;
-            margin-top: auto;
-        }
-
-        .footer-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .social-links {
-            display: flex;
-            gap: 1rem;
-        }
-
-        .social-links a {
-            color: var(--primary-color);
-            text-decoration: none;
-            transition: color 0.3s ease;
-        }
-
-        .social-links a:hover {
-            color: var(--secondary-color);
-        }
-
         @media (max-width: 1200px) {
             .carousel {
                 flex-direction: column;
@@ -296,21 +209,7 @@ $db->close();
     </style>
 </head>
 <body>
-    <header class="header">
-            <div class="header-content">
-                <div class="logo-section">
-                    <div class="logo">
-                        <i class="fas fa-venus-mars"></i>
-                    </div>
-                    <h1 class="site-title">Gender and Development Profiling System</h1>
-                </div>
-                <nav class="nav-links">
-                    <a href="index.php"><i class="fas fa-home"></i> Home</a>
-                    <a href="#"><i class="fas fa-info-circle"></i> About</a>
-                    <a href="#"><i class="fas fa-envelope"></i> Contact</a>
-                </nav>
-            </div>
-        </header>
+    <?php include 'assets/html/header_front.html'; ?>
 
     <main class="carousel-section">
         <div class="carousel">
@@ -339,17 +238,7 @@ $db->close();
         </div>
     </main>
 
-    <footer class="footer">
-        <div class="footer-content">
-            <div class="social-links">
-                <a href="#"><i class="fab fa-facebook"></i></a>
-                <a href="#"><i class="fab fa-twitter"></i></a>
-                <a href="#"><i class="fab fa-instagram"></i></a>
-                <a href="#"><i class="fab fa-linkedin"></i></a>
-            </div>
-            <p>&copy; 2024 Gender and Development Profiling System. All rights reserved.</p>
-        </div>
-    </footer>
+    <?php include 'assets/html/footer.html'; ?>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
