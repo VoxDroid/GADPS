@@ -458,14 +458,6 @@ while (ob_get_level()) {
             to { opacity: 1; transform: translateY(0); }
         }
 
-        h1 {
-            color: var(--primary-color);
-            text-align: center;
-            margin-bottom: 2rem;
-            font-size: 2.5rem;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
         .export-options {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));

@@ -27,16 +27,25 @@ try {
 }
 
 // Fetch data (only active items)
-try {
+function fetchData($selectedPurok = null) {
+    global $db;
     $query = "SELECT * FROM purok_selection WHERE item_status = 'active'";
-    $results = $db->query($query);
+    if ($selectedPurok !== null) {
+        $query .= " AND purok = :purok";
+    }
+    $stmt = $db->prepare($query);
+    if ($selectedPurok !== null) {
+        $stmt->bindValue(':purok', $selectedPurok, SQLITE3_INTEGER);
+    }
+    $results = $stmt->execute();
     $data = [];
     while ($row = $results->fetchArray(SQLITE3_ASSOC)) {
         $data[] = $row;
     }
-} catch (Exception $e) {
-    die("Data fetch failed: " . $e->getMessage());
+    return $data;
 }
+
+$data = fetchData();
 
 // Get available puroks
 $availablePuroks = [];
@@ -47,7 +56,39 @@ foreach ($data as $row) {
 }
 sort($availablePuroks);
 
-$db->close();
+// Handle AJAX request for preview update
+if (isset($_GET['action']) && $_GET['action'] === 'update_preview') {
+    $selectedPurok = isset($_GET['purok']) && $_GET['purok'] !== '' ? (int)$_GET['purok'] : null;
+    $filteredData = fetchData($selectedPurok);
+    $previewData = array_slice($filteredData, 0, 10);
+    
+    $html = '';
+    foreach ($previewData as $row) {
+        $html .= '<tr>';
+        $html .= '<td>' . htmlspecialchars($row['name']) . '</td>';
+        $html .= '<td>' . htmlspecialchars($row['birthday']) . '</td>';
+        $html .= '<td>' . htmlspecialchars($row['age']) . '</td>';
+        $html .= '<td>' . htmlspecialchars($row['gender']) . '</td>';
+        $html .= '<td>' . htmlspecialchars($row['civil_status']) . '</td>';
+        $html .= '<td>' . htmlspecialchars($row['occupation']) . '</td>';
+        $html .= '<td>' . ($row['sc'] ? 'Yes' : 'No') . '</td>';
+        $html .= '<td>' . ($row['pwd'] ? 'Yes' : 'No') . '</td>';
+        $html .= '<td>' . ($row['hypertension'] ? 'Yes' : 'No') . '</td>';
+        $html .= '<td>' . ($row['diabetes'] ? 'Yes' : 'No') . '</td>';
+        $html .= '<td>' . ($row['f_planning'] ? 'Yes' : 'No') . '</td>';
+        $html .= '<td>' . ($row['t_pregnancy'] ? 'Yes' : 'No') . '</td>';
+        $html .= '<td>' . ($row['poso'] ? 'Yes' : 'No') . '</td>';
+        $html .= '<td>' . ($row['nawasa'] ? 'Yes' : 'No') . '</td>';
+        $html .= '<td>' . ($row['mineral'] ? 'Yes' : 'No') . '</td>';
+        $html .= '<td>' . ($row['segregation'] ? 'Yes' : 'No') . '</td>';
+        $html .= '<td>' . ($row['composition'] ? 'Yes' : 'No') . '</td>';
+        $html .= '<td>' . htmlspecialchars($row['purok']) . '</td>';
+        $html .= '</tr>';
+    }
+    
+    echo $html;
+    exit;
+}
 
 // Handle export requests
 if (isset($_POST['export'])) {
@@ -55,12 +96,7 @@ if (isset($_POST['export'])) {
     $filename = $_POST['filename'];
     $selectedPurok = isset($_POST['purok']) && $_POST['purok'] !== '' ? (int)$_POST['purok'] : null;
     
-    // Filter data based on selected purok
-    if ($selectedPurok !== null) {
-        $data = array_filter($data, function($row) use ($selectedPurok) {
-            return $row['purok'] == $selectedPurok;
-        });
-    }
+    $data = fetchData($selectedPurok);
     
     try {
         switch($format) {
@@ -499,6 +535,8 @@ function exportPDF($data, $options) {
     $pdf->Output($options['filename'].'.pdf', 'D');
 }
 
+$db->close();
+
 // Clear any remaining output buffer
 while (ob_get_level()) {
     ob_end_clean();
@@ -529,14 +567,6 @@ while (ob_get_level()) {
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(-20px); }
             to { opacity: 1; transform: translateY(0); }
-        }
-
-        h1 {
-            color: var(--primary-color);
-            text-align: center;
-            margin-bottom: 2rem;
-            font-size: 2.5rem;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .export-options {
@@ -660,57 +690,43 @@ while (ob_get_level()) {
             margin-bottom: 16px;
         }
 
-        .horizontal-scroll {
-            height: 12px;
-            overflow-x: auto;
-            overflow-y: hidden;
-        }
-
-        .horizontal-scroll-content {
-            height: 1px;
-        }
-
         .preview-table {
             width: 100%;
-            border-collapse: separate;
-            border-spacing: 0;
+            border-collapse: collapse;
             font-size: 0.9rem;
         }
 
         .preview-table th,
         .preview-table td {
-            border: 1px solid #e2e8f0;
             padding: 0.75rem;
             text-align: left;
+            border: 1px solid var(--border-color);
         }
 
         .preview-table th {
-            background-color: #f7fafc;
+            background-color: var(--accent-color);
             font-weight: 600;
-            color: var(--primary-color);
             position: sticky;
             top: 0;
             z-index: 10;
         }
 
-        .preview-table th:first-child,
-        .preview-table td:first-child {
-            position: sticky;
-            left: 0;
-            z-index: 20;
-            background-color: white;
+        .preview-table tr:nth-child(even) {
+            background-color: var(--background-color);
         }
 
-        .preview-table th:first-child {
-            z-index: 30;
+        .preview-table tr:hover {
+            background-color: var(--hover-color);
         }
 
-        .preview-table tbody tr:nth-child(even) {
-            background-color: #f7fafc;
+        .horizontal-scroll {
+            overflow-x: auto;
+            overflow-y: hidden;
+            height: 12px;
         }
 
-        .preview-table tbody tr:hover {
-            background-color: #edf2f7;
+        .horizontal-scroll-content {
+            height: 1px;
         }
 
         @media (max-width: 768px) {
@@ -721,15 +737,6 @@ while (ob_get_level()) {
             .export-options {
                 grid-template-columns: 1fr;
             }
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        .fade-in {
-            animation: fadeIn 0.5s ease-in-out;
         }
     </style>
 </head>
@@ -742,78 +749,70 @@ while (ob_get_level()) {
         <form method="post" id="exportForm">
             <div class="export-options">
                 <div class="option-group">
-                    <h2><i class="fas fa-cog"></i> Basic Settings</h2>
-                    <div class="form-group">
-                        <label for="filename">Filename:</label>
-                        <input type="text" id="filename" name="filename" value="purok_selection_data" required>
-                    </div>
+                    <h2><i class="fas fa-file-export"></i> Export Settings</h2>
                     <div class="form-group">
                         <label for="format">Export Format:</label>
-                        <select id="format" name="format" required onchange="updateOptions()">
+                        <select id="format" name="format" onchange="updateOptions()">
                             <option value="xlsx">Excel (XLSX)</option>
                             <option value="csv">CSV</option>
                             <option value="pdf">PDF</option>
                         </select>
                     </div>
                     <div class="form-group">
+                        <label for="filename">File Name:</label>
+                        <input type="text" id="filename" name="filename" value="purok_selection_export" required>
+                    </div>
+                    <div class="form-group">
                         <label for="purok">Select Purok:</label>
-                        <select id="purok" name="purok" onchange="updatePreview()">
+                        <select id="purok" name="purok">
                             <option value="">All Puroks</option>
                             <?php foreach ($availablePuroks as $purok): ?>
-                                <option value="<?php echo $purok; ?>">Purok <?php echo $purok; ?></option>
+                                <option value="<?php echo htmlspecialchars($purok); ?>"><?php echo htmlspecialchars($purok); ?></option>
                             <?php endforeach; ?>
                         </select>
                     </div>
                 </div>
-
-                <div class="option-group" id="spreadsheetOptions">
+                
+                <div id="spreadsheetOptions" class="option-group">
                     <h2><i class="fas fa-table"></i> Spreadsheet Options</h2>
                     <div class="form-group">
-                        <label for="columnWidth">Base Column Width:</label>
+                        <label for="columnWidth">Column Width:</label>
                         <input type="number" id="columnWidth" name="columnWidth" value="15" min="5" max="50">
-                    </div>
-                    <div class="form-group">
-                        <label for="fontSize">Font Size:</label>
-                        <input type="number" id="fontSize" name="fontSize" value="11" min="8" max="16">
                     </div>
                     <div class="form-group">
                         <label for="headerColor">Header Color:</label>
                         <input type="color" id="headerColor" name="headerColor" value="#E2EFDA">
                     </div>
                 </div>
-
-                <div class="option-group" id="csvOptions" style="display: none;">
+                
+                <div id="csvOptions" class="option-group" style="display: none;">
                     <h2><i class="fas fa-file-csv"></i> CSV Options</h2>
                     <div class="form-group">
                         <label for="delimiter">Delimiter:</label>
                         <select id="delimiter" name="delimiter">
                             <option value=",">Comma (,)</option>
                             <option value=";">Semicolon (;)</option>
-                            <option value="\t">Tab</option>
+                            <option value="\t">Tab (\t)</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="enclosure">Text Enclosure:</label>
+                        <label for="enclosure">Enclosure:</label>
                         <select id="enclosure" name="enclosure">
                             <option value='"'>Double Quote (")</option>
                             <option value="'">Single Quote (')</option>
                         </select>
                     </div>
-                    <div class="form-group">
-                        <label for="csvHeaderColor">Header Color:</label>
-                        <input type="color" id="csvHeaderColor" name="csvHeaderColor" value="#E2EFDA">
-                    </div>
                 </div>
-
-                <div class="option-group" id="pdfOptions" style="display: none;">
+                
+                <div id="pdfOptions" class="option-group" style="display: none;">
                     <h2><i class="fas fa-file-pdf"></i> PDF Options</h2>
                     <div class="form-group">
-                        <label for="customPageWidth">Custom Page Width (mm):</label>
-                        <input type="number" id="customPageWidth" name="customPageWidth" value="1188" min="100" max="2000">
+                        <label for="customPageWidth">Page Width (mm):</label>
+                        <input type="number" id="customPageWidth" name="customPageWidth" value="1188" min="100" max="1500">
                     </div>
                     <div class="form-group">
-                        <label for="customPageHeight">Custom Page Height (mm):</label>
-                        <input type="number" id="customPageHeight" name="customPageHeight" value="420" min="100" max="2000">
+                        <label for="customPageHeight">Page Height (mm):</label>
+                        <input type="number" id="customPageHeight" name="customPageHeight" value="420" min="100" max="1000">
                     </div>
                     <div class="form-group">
                         <label for="fontFamily">Font Family:</label>
@@ -840,7 +839,7 @@ while (ob_get_level()) {
                     </div>
                 </div>
             </div>
-
+            
             <div style="text-align: center;">
                 <a href="purok_selection.php" class="button" style="margin-right: 10px;">
                     <i class="fas fa-arrow-left"></i> Back to Purok Selection Form
@@ -854,7 +853,7 @@ while (ob_get_level()) {
         <div class="preview-container">
             <div class="preview-header">
                 <i class="fas fa-eye"></i>
-                <h2>Preview (First 10 Rows of All Puroks)</h2>
+                <h2>Preview (First 10 Rows)</h2>
             </div>
             <div class="table-wrapper">
                 <div class="table-scroll-container">
@@ -889,32 +888,7 @@ while (ob_get_level()) {
                             </tr>
                         </thead>
                         <tbody id="previewBody">
-                            <?php
-                            // Get the first 10 rows for initial preview
-                            $previewData = array_slice($data, 0, 10);
-                            foreach ($previewData as $row):
-                            ?>
-                            <tr>
-                                <td><?php echo htmlspecialchars($row['name']); ?></td>
-                                <td><?php echo htmlspecialchars($row['birthday']); ?></td>
-                                <td><?php echo htmlspecialchars($row['age']); ?></td>
-                                <td><?php echo htmlspecialchars($row['gender']); ?></td>
-                                <td><?php echo htmlspecialchars($row['civil_status']); ?></td>
-                                <td><?php echo htmlspecialchars($row['occupation']); ?></td>
-                                <td><?php echo $row['sc'] ? 'Yes' : 'No'; ?></td>
-                                <td><?php echo $row['pwd'] ? 'Yes' : 'No'; ?></td>
-                                <td><?php echo $row['hypertension'] ? 'Yes' : 'No'; ?></td>
-                                <td><?php echo $row['diabetes'] ? 'Yes' : 'No'; ?></td>
-                                <td><?php echo $row['f_planning'] ? 'Yes' : 'No'; ?></td>
-                                <td><?php echo $row['t_pregnancy'] ? 'Yes' : 'No'; ?></td>
-                                <td><?php echo $row['poso'] ? 'Yes' : 'No'; ?></td>
-                                <td><?php echo $row['nawasa'] ? 'Yes' : 'No'; ?></td>
-                                <td><?php echo $row['mineral'] ? 'Yes' : 'No'; ?></td>
-                                <td><?php echo $row['segregation'] ? 'Yes' : 'No'; ?></td>
-                                <td><?php echo $row['composition'] ? 'Yes' : 'No'; ?></td>
-                                <td><?php echo htmlspecialchars($row['purok']); ?></td>
-                            </tr>
-                            <?php endforeach; ?>
+                            <!-- Preview data will be dynamically inserted here -->
                         </tbody>
                     </table>
                 </div>
@@ -942,46 +916,18 @@ while (ob_get_level()) {
         function updatePreview() {
             const selectedPurok = document.getElementById('purok').value;
             const previewBody = document.getElementById('previewBody');
-            const allRows = <?php echo json_encode($data); ?>;
             
-            let filteredRows = selectedPurok ? allRows.filter(row => row.purok == selectedPurok) : allRows;
-            filteredRows = filteredRows.slice(0, 10); // Limit to 10 rows for preview
+            previewBody.innerHTML = '<tr><td colspan="18" style="text-align: center;">Loading...</td></tr>';
             
-            let html = '';
-            for (const row of filteredRows) {
-                html += `
-                    <tr>
-                        <td>${escapeHtml(row.name)}</td>
-                        <td>${escapeHtml(row.birthday)}</td>
-                        <td>${escapeHtml(row.age)}</td>
-                        <td>${escapeHtml(row.gender)}</td>
-                        <td>${escapeHtml(row.civil_status)}</td>
-                        <td>${escapeHtml(row.occupation)}</td>
-                        <td>${row.sc ? 'Yes' : 'No'}</td>
-                        <td>${row.pwd ? 'Yes' : 'No'}</td>
-                        <td>${row.hypertension ? 'Yes' : 'No'}</td>
-                        <td>${row.diabetes ? 'Yes' : 'No'}</td>
-                        <td>${row.f_planning ? 'Yes' : 'No'}</td>
-                        <td>${row.t_pregnancy ? 'Yes' : 'No'}</td>
-                        <td>${row.poso ? 'Yes' : 'No'}</td>
-                        <td>${row.nawasa ? 'Yes' : 'No'}</td>
-                        <td>${row.mineral ? 'Yes' : 'No'}</td>
-                        <td>${row.segregation ? 'Yes' : 'No'}</td>
-                        <td>${row.composition ? 'Yes' : 'No'}</td>
-                        <td>${escapeHtml(row.purok)}</td>
-                    </tr>
-                `;
-            }
-            previewBody.innerHTML = html;
-        }
-
-        function escapeHtml(unsafe) {
-            return unsafe
-                 .replace(/&/g, "&amp;")
-                 .replace(/</g, "&lt;")
-                 .replace(/>/g, "&gt;")
-                 .replace(/"/g, "&quot;")
-                 .replace(/'/g, "&#039;");
+            fetch(`export.php?action=update_preview&purok=${selectedPurok}`)
+                .then(response => response.text())
+                .then(html => {
+                    previewBody.innerHTML = html;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    previewBody.innerHTML = '<tr><td colspan="18" style="text-align: center;">Error loading preview</td></tr>';
+                });
         }
 
         document.addEventListener('DOMContentLoaded', function() {
@@ -1009,11 +955,11 @@ while (ob_get_level()) {
                 tableScrollContainer.scrollLeft = this.scrollLeft;
             });
 
-            // Initial call to populate the preview
             updatePreview();
+
+            document.getElementById('purok').addEventListener('change', updatePreview);
         });
 
-        // Initial call to set the correct options visibility
         updateOptions();
     </script>
 </body>

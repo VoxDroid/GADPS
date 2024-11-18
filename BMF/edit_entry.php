@@ -84,14 +84,6 @@ $prenatal_visits = json_decode($entry['prenatal_visits'], true);
             border-radius: 20px 20px 0 0;
         }
 
-        h1 {
-            color: var(--primary-color);
-            text-align: center;
-            margin-bottom: 30px;
-            font-size: 2.5rem;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
         .form-group {
             margin-bottom: 20px;
         }
