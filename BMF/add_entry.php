@@ -171,7 +171,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <?php include '../assets/html/header.html'; ?>
 
     <div class="container">
-        <h1>Add New Entry</h1>
+        <h1>Add New Entry - Barangay Midwifery</h1>
         <form method="POST">
             <div class="form-group">
                 <label for="name">Name of Pregnant:</label>

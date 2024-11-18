@@ -1,25 +1,8 @@
 <?php
-// barangay_midwifery.php
-// PHP code for database connection and initial query setup
+// ci_archive.php
+// Database connection
 $db_file = '../gender_dev_profiling.db';
 $db = new SQLite3($db_file);
-
-// Create tables if they don't exist
-$db->exec("CREATE TABLE IF NOT EXISTS barangay_midwifery (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT,
-    age INTEGER,
-    address TEXT,
-    lmp DATE,
-    edc DATE,
-    prenatal_visits TEXT,
-    date_of_birth DATE,
-    sex TEXT,
-    birth_weight REAL,
-    birth_length REAL,
-    place_of_delivery TEXT,
-    item_status TEXT DEFAULT 'active'
-)");
 
 // Get pagination parameters
 $entries_per_page = isset($_GET['entries']) ? (int)$_GET['entries'] : 10;
@@ -34,17 +17,17 @@ $offset = ($page - 1) * $entries_per_page;
 // Prepare search condition
 $search_condition = '';
 if ($search) {
-    $search_condition = " AND (name LIKE '%$search%' OR address LIKE '%$search%')";
+    $search_condition = " AND (name LIKE '%$search%' OR mother_name LIKE '%$search%')";
 }
 
 // Get total entries count
-$total_entries = $db->querySingle("SELECT COUNT(*) FROM barangay_midwifery WHERE item_status = 'active'" . $search_condition);
+$total_entries = $db->querySingle("SELECT COUNT(*) FROM child_immunization WHERE item_status = 'inactive'" . $search_condition);
 
 // Prepare the ORDER BY clause
 $order_by = " ORDER BY $sort_column $sort_order";
 
 // Get entries for current page
-$query = "SELECT * FROM barangay_midwifery WHERE item_status = 'active'" . $search_condition . $order_by . " LIMIT $entries_per_page OFFSET $offset";
+$query = "SELECT * FROM child_immunization WHERE item_status = 'inactive'" . $search_condition . $order_by . " LIMIT $entries_per_page OFFSET $offset";
 $results = $db->query($query);
 
 // Calculate total pages
@@ -66,18 +49,30 @@ function updateQueryString($params) {
     return '?' . http_build_query($current_params);
 }
 
-// Function to archive an entry
-function archiveEntry($id) {
+// Function to restore an entry
+function restoreEntry($id) {
     global $db;
-    $stmt = $db->prepare("UPDATE barangay_midwifery SET item_status = 'inactive' WHERE id = ?");
+    $stmt = $db->prepare("UPDATE child_immunization SET item_status = 'active' WHERE id = ?");
     $stmt->bindValue(1, $id, SQLITE3_INTEGER);
     $stmt->execute();
 }
 
-// Handle archive action
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['archive_id'])) {
-    archiveEntry($_POST['archive_id']);
-    header('Location: barangay_midwifery.php');
+// Function to permanently delete an entry
+function permanentlyDeleteEntry($id) {
+    global $db;
+    $stmt = $db->prepare("DELETE FROM child_immunization WHERE id = ?");
+    $stmt->bindValue(1, $id, SQLITE3_INTEGER);
+    $stmt->execute();
+}
+
+// Handle restore and delete actions
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (isset($_POST['restore_id'])) {
+        restoreEntry($_POST['restore_id']);
+    } elseif (isset($_POST['delete_id'])) {
+        permanentlyDeleteEntry($_POST['delete_id']);
+    }
+    header('Location: ci_archive.php');
     exit;
 }
 ?>
@@ -86,7 +81,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['archive_id'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Barangay Midwifery Form</title>
+    <title>Archived Entries - Child Immunization Form</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../assets/css/main.css">
@@ -121,7 +116,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['archive_id'])) {
             background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
             border-radius: 20px 20px 0 0;
         }
-        
+
         .button-container {
             margin-bottom: 30px;
             position: sticky;
@@ -202,13 +197,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['archive_id'])) {
             z-index: 10;
         }
 
-        .prenatal-header {
-            background-color: var(--accent-color) !important;
-            text-align: center;
-            color: var(--primary-color);
-            border-left: 2px solid var(--primary-color);
-        }
-
         .nested-header {
             background-color: var(--accent-color) !important;
             text-align: center;
@@ -239,7 +227,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['archive_id'])) {
             background-color: #f7fafc !important;
         }
 
-        .visit-cell {
+        .nested-cell {
             text-align: center;
             min-width: 100px;
         }
@@ -248,7 +236,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['archive_id'])) {
             background-color: #f7fafc;
         }
 
-        .button-edit, .button-archive {
+        .button-restore, .button-delete {
             font-family: 'Poppins', sans-serif;
             font-size: 14px;
             padding: 8px 16px;
@@ -256,12 +244,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['archive_id'])) {
             min-width: 100px;
         }
 
-        .button-edit {
-            background-color: var(--primary-color);
+        .button-restore {
+            background-color: #4CAF50;
         }
 
-        .button-archive {
-            background-color: #ffa500;
+        .button-delete {
+            background-color: #f44336;
         }
 
         .controls-container {
@@ -277,21 +265,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['archive_id'])) {
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
         }
 
-        .total-entries {
-            background-color: var(--accent-color);
-            color: var(--primary-color);
-            padding: 8px 12px;
-            border-radius: 8px;
-            font-weight: 600;
-            margin-right: 10px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
         .search-container {
             display: flex;
             gap: 10px;
             align-items: center;
-            flex-wrap: wrap;
         }
 
         .search-input {
@@ -450,7 +427,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['archive_id'])) {
             background-color: #f7fafc;
         }
 
-        /* New styles for sorting */
         .sort-icon {
             margin-left: 5px;
         }
@@ -471,24 +447,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['archive_id'])) {
         .reset-sort:hover {
             text-decoration: underline;
         }
+
+        .total-entries {
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            margin-right: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
     </style>
 </head>
 <body>
     <?php include '../assets/html/header.html'; ?>
 
     <div class="container">
-        <h1>Barangay Midwifery Form</h1>
+        <h1>Archived Entries - Child Immunization Form</h1>
         
         <div class="controls-container">
             <div class="button-container">
-                <a href="add_entry.php" class="button"><i class="fas fa-plus"></i> Add New Entry</a>
-                <a href="export.php" class="button button-export"><i class="fas fa-file-export"></i> Export</a>
-                <a href="bm_archive.php" class="button"><i class="fas fa-archive"></i> View Archive</a>
+                <a href="child_immunization.php" class="button"><i class="fas fa-arrow-left"></i> Back to Active Entries</a>
                 <span class="reset-sort" onclick="resetSort()"><i class="fas fa-undo"></i> Reset Sort</span>
             </div>
             
             <div class="search-container">
-                <span class="total-entries">Total Active Entries: <?php echo $total_entries; ?></span>
+                <span class="total-entries">Total Archived Entries: <?php echo $total_entries; ?></span>
                 <select class="entries-select" onchange="changeEntries(this.value)">
                     <?php
                     $options = [10, 20, 30, 40, 50];
@@ -516,64 +500,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['archive_id'])) {
                 <table>
                     <thead>
                         <tr>
-                            <th rowspan="3" onclick="sortTable('id')">
+                            <th rowspan="2" onclick="sortTable('id')">
                                 ID
                                 <i class="fas fa-sort sort-icon <?php echo $sort_column === 'id' ? ($sort_order === 'ASC' ? 'fa-sort-up' : 'fa-sort-down') : ''; ?> <?php echo $sort_column === 'id' ? 'active' : ''; ?>"></i>
                             </th>
-                            <th rowspan="3" onclick="sortTable('name')">
-                                Name
+                            <th rowspan="2" onclick="sortTable('name')">
+                                Name of Child
                                 <i class="fas fa-sort sort-icon <?php echo $sort_column === 'name' ? ($sort_order === 'ASC' ? 'fa-sort-up' : 'fa-sort-down') : ''; ?> <?php echo $sort_column === 'name' ? 'active' : ''; ?>"></i>
                             </th>
-                            <th rowspan="3" onclick="sortTable('age')">
+                            <th rowspan="2" onclick="sortTable('age')">
                                 Age
                                 <i class="fas fa-sort sort-icon <?php echo $sort_column === 'age' ? ($sort_order === 'ASC' ? 'fa-sort-up' : 'fa-sort-down') : ''; ?> <?php echo $sort_column === 'age' ? 'active' : ''; ?>"></i>
                             </th>
-                            <th rowspan="3" onclick="sortTable('address')">
-                                Address
-                                <i class="fas fa-sort sort-icon <?php echo $sort_column === 'address' ? ($sort_order === 'ASC' ? 'fa-sort-up' : 'fa-sort-down') : ''; ?> <?php echo $sort_column === 'address' ? 'active' : ''; ?>"></i>
+                            <th rowspan="2" onclick="sortTable('birthdate')">
+                                Birthdate
+                                <i class="fas fa-sort sort-icon <?php echo $sort_column === 'birthdate' ? ($sort_order === 'ASC' ? 'fa-sort-up' : 'fa-sort-down') : ''; ?> <?php echo $sort_column === 'birthdate' ? 'active' : ''; ?>"></i>
                             </th>
-                            <th rowspan="3" onclick="sortTable('lmp')">
-                                LMP
-                                <i class="fas fa-sort sort-icon <?php echo $sort_column === 'lmp' ? ($sort_order === 'ASC' ? 'fa-sort-up' : 'fa-sort-down') : ''; ?> <?php echo $sort_column === 'lmp' ? 'active' : ''; ?>"></i>
+                            <th rowspan="2" onclick="sortTable('mother_name')">
+                                Name of Mother
+                                <i class="fas fa-sort sort-icon <?php echo $sort_column === 'mother_name' ? ($sort_order === 'ASC' ? 'fa-sort-up' : 'fa-sort-down') : ''; ?> <?php echo $sort_column === 'mother_name' ? 'active' : ''; ?>"></i>
                             </th>
-                            <th rowspan="3" onclick="sortTable('edc')">
-                                EDC
-                                <i class="fas fa-sort sort-icon <?php echo $sort_column === 'edc' ? ($sort_order === 'ASC' ? 'fa-sort-up' : 'fa-sort-down') : ''; ?> <?php echo $sort_column === 'edc' ? 'active' : ''; ?>"></i>
-                            </th>
-                            <th colspan="12" class="prenatal-header">Prenatal Visits</th>
-                            <th rowspan="3" onclick="sortTable('date_of_birth')">
-                                Date of Birth
-                                <i class="fas fa-sort sort-icon <?php echo $sort_column === 'date_of_birth' ? ($sort_order === 'ASC' ? 'fa-sort-up' : 'fa-sort-down') : ''; ?> <?php echo $sort_column === 'date_of_birth' ? 'active' : ''; ?>"></i>
-                            </th>
-                            <th rowspan="3" onclick="sortTable('sex')">
-                                Sex
-                                <i class="fas fa-sort sort-icon <?php echo $sort_column === 'sex' ? ($sort_order === 'ASC' ? 'fa-sort-up' : 'fa-sort-down') : ''; ?> <?php echo $sort_column === 'sex' ? 'active' : ''; ?>"></i>
-                            </th>
-                            <th rowspan="3" onclick="sortTable('birth_weight')">
-                                Birth Weight
-                                <i class="fas fa-sort sort-icon <?php echo $sort_column === 'birth_weight' ? ($sort_order === 'ASC' ? 'fa-sort-up' : 'fa-sort-down') : ''; ?> <?php echo $sort_column === 'birth_weight' ? 'active' : ''; ?>"></i>
-                            </th>
-                            <th rowspan="3" onclick="sortTable('birth_length')">
-                                Birth Length
-                                <i class="fas fa-sort sort-icon <?php echo $sort_column === 'birth_length' ? ($sort_order === 'ASC' ? 'fa-sort-up' : 'fa-sort-down') : ''; ?> <?php echo $sort_column === 'birth_length' ? 'active' : ''; ?>"></i>
-                            </th>
-                            <th rowspan="3" onclick="sortTable('place_of_delivery')">
-                                Place of Delivery
-                                <i class="fas fa-sort sort-icon <?php echo $sort_column === 'place_of_delivery' ? ($sort_order === 'ASC' ? 'fa-sort-up' : 'fa-sort-down') : ''; ?> <?php echo $sort_column === 'place_of_delivery' ? 'active' : ''; ?>"></i>
-                            </th>
-                            <th rowspan="3">Actions</th>
+                            <th colspan="14" class="nested-header">Immunization</th>
+                            <th rowspan="2">Actions</th>
                         </tr>
                         <tr>
-                            <th colspan="3" class="nested-header">1st Tri</th>
-                            <th colspan="3" class="nested-header">2nd Tri</th>
-                            <th colspan="6" class="nested-header">3rd Tri</th>
-                        </tr>
-                        <tr>
-                            <?php for ($i = 1; $i <= 12; $i++): ?>
-                                <th class="nested-header">
-                                    <?php echo $i; ?>
-                                </th>
-                            <?php endfor; ?>
+                            <th class="nested-header">BCG</th>
+                            <th class="nested-header">HEPA B</th>
+                            <th class="nested-header">PENTA 1</th>
+                            <th class="nested-header">PENTA 2</th>
+                            <th class="nested-header">PENTA 3</th>
+                            <th class="nested-header">OPV 1</th>
+                            <th class="nested-header">OPV 2</th>
+                            <th class="nested-header">OPV 3</th>
+                            <th class="nested-header">PCV 1</th>
+                            <th class="nested-header">PCV 2</th>
+                            <th class="nested-header">PCV 3</th>
+                            <th class="nested-header">IPV</th>
+                            <th class="nested-header">MCV 1</th>
+                            <th class="nested-header">MCV 2</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -581,28 +545,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['archive_id'])) {
                         $row_count = 0;
                         while ($row = $results->fetchArray(SQLITE3_ASSOC)): 
                             $row_count++;
-                            $prenatal_visits = json_decode($row['prenatal_visits'], true);
                         ?>
                             <tr>
                                 <td><?php echo htmlspecialchars($row['id']); ?></td>
                                 <td><?php echo htmlspecialchars($row['name']); ?></td>
                                 <td><?php echo htmlspecialchars($row['age']); ?></td>
-                                <td><?php echo htmlspecialchars($row['address']); ?></td>
-                                <td><?php echo htmlspecialchars($row['lmp']); ?></td>
-                                <td><?php echo htmlspecialchars($row['edc']); ?></td>
-                                <?php
-                                for ($i = 0; $i < 12; $i++) {
-                                    echo '<td class="visit-cell">' . htmlspecialchars($prenatal_visits[$i] ?? '') . '</td>';
-                                }
-                                ?>
-                                <td><?php echo htmlspecialchars($row['date_of_birth']); ?></td>
-                                <td><?php echo htmlspecialchars($row['sex']); ?></td>
-                                <td><?php echo htmlspecialchars($row['birth_weight']); ?></td>
-                                <td><?php echo htmlspecialchars($row['birth_length']); ?></td>
-                                <td><?php echo htmlspecialchars($row['place_of_delivery']); ?></td>
+                                <td><?php echo htmlspecialchars($row['birthdate']); ?></td>
+                                <td><?php echo htmlspecialchars($row['mother_name']); ?></td>
+                                <td class="nested-cell"><?php echo htmlspecialchars($row['bcg']); ?></td>
+                                <td class="nested-cell"><?php echo htmlspecialchars($row['hepa_b']); ?></td>
+                                <td class="nested-cell"><?php echo htmlspecialchars($row['penta_1']); ?></td>
+                                <td class="nested-cell"><?php echo htmlspecialchars($row['penta_2']); ?></td>
+                                <td class="nested-cell"><?php echo htmlspecialchars($row['penta_3']); ?></td>
+                                <td class="nested-cell"><?php echo htmlspecialchars($row['opv_1']); ?></td>
+                                <td class="nested-cell"><?php echo htmlspecialchars($row['opv_2']); ?></td>
+                                <td class="nested-cell"><?php echo htmlspecialchars($row['opv_3']); ?></td>
+                                <td class="nested-cell"><?php echo htmlspecialchars($row['pcv_1']); ?></td>
+                                <td class="nested-cell"><?php echo htmlspecialchars($row['pcv_2']); ?></td>
+                                <td class="nested-cell"><?php echo htmlspecialchars($row['pcv_3']); ?></td>
+                                <td class="nested-cell"><?php echo htmlspecialchars($row['ipv']); ?></td>
+                                <td class="nested-cell"><?php echo htmlspecialchars($row['mcv_1']); ?></td>
+                                <td class="nested-cell"><?php echo htmlspecialchars($row['mcv_2']); ?></td>
                                 <td>
-                                    <a href="edit_entry.php?id=<?php echo $row['id']; ?>" class="button button-edit"><i class="fas fa-edit"></i> Edit</a>
-                                    <button onclick="showArchiveModal(<?php echo $row['id']; ?>)" class="button button-archive"><i class="fas fa-archive"></i> Archive</button>
+                                    <button onclick="showRestoreModal(<?php echo $row['id']; ?>)" class="button button-restore"><i class="fas fa-undo"></i> Restore</button>
+                                    <button onclick="showDeleteModal(<?php echo $row['id']; ?>)" class="button button-delete"><i class="fas fa-trash-alt"></i> Delete</button>
                                 </td>
                             </tr>
                         <?php endwhile; 
@@ -616,13 +582,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['archive_id'])) {
                                 <td>-</td>
                                 <td>-</td>
                                 <td>-</td>
-                                <td>-</td>
-                                <?php for ($i = 0; $i < 12; $i++) echo '<td>-</td>'; ?>
-                                <td>-</td>
-                                <td>-</td>
-                                <td>-</td>
-                                <td>-</td>
-                                <td>-</td>
+                                <?php for ($i = 0; $i < 14; $i++) echo '<td class="nested-cell">-</td>'; ?>
                                 <td>-</td>
                             </tr>
                         <?php endwhile; ?>
@@ -651,18 +611,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['archive_id'])) {
         </div>
     </div>
 
-    <div id="archiveModal" class="modal">
+    <div id="restoreModal" class="modal">
         <div class="modal-content">
-            <h2><i class="fas fa-archive" style="color: #ffa500;"></i> Confirm Archive</h2>
-            <p>Are you sure you want to archive this entry?</p>
+            <h2><i class="fas fa-undo" style="color: #4CAF50;"></i> Confirm Restore</h2>
+            <p>Are you sure you want to restore this entry?</p>
             <div class="modal-buttons">
-                <button type="button" onclick="hideArchiveModal()" class="button">
+                <button type="button" onclick="hideRestoreModal()" class="button">
                     <i class="fas fa-times"></i> Cancel
                 </button>
-                <form id="archive-form" method="POST" style="display: inline;">
-                    <input type="hidden" name="archive_id" id="archiveId">
-                    <button type="submit" class="button button-archive">
-                        <i class="fas fa-check"></i> Confirm Archive
+                <form id="restore-form" method="POST" style="display: inline;">
+                    <input type="hidden" name="restore_id" id="restoreId">
+                    <button type="submit" class="button button-restore">
+                        <i class="fas fa-check"></i> Confirm Restore
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="deleteModal" class="modal">
+        <div class="modal-content">
+            <h2><i class="fas fa-exclamation-triangle" style="color: #dc3545;"></i> Confirm Permanent Delete</h2>
+            <p>Are you sure you want to permanently delete this entry? This action cannot be undone.</p>
+            <div class="modal-buttons">
+                <button type="button" onclick="hideDeleteModal()" class="button">
+                    <i class="fas fa-times"></i> Cancel
+                </button>
+                <form id="delete-form" method="POST" style="display: inline;">
+                    <input type="hidden" name="delete_id" id="deleteId">
+                    <button type="submit" class="button button-delete">
+                        <i class="fas fa-check"></i> Confirm Delete
                     </button>
                 </form>
             </div>
@@ -684,20 +662,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['archive_id'])) {
             currentHorizontalScrollPosition = tableScrollContainer ? tableScrollContainer.scrollLeft : 0;
             localStorage.setItem('verticalScrollPosition', currentVerticalScrollPosition);
             localStorage.setItem('horizontalScrollPosition', currentHorizontalScrollPosition);
-            // Remove this line:
-            // localStorage.setItem('currentPage', currentPage);
         }
 
         // Function to restore the scroll positions and navigate to the saved page
         function restoreState() {
             const savedVerticalPosition = localStorage.getItem('verticalScrollPosition');
             const savedHorizontalPosition = localStorage.getItem('horizontalScrollPosition');
-            // Remove these lines:
-            // const savedPage = localStorage.getItem('currentPage');
-            // if (savedPage && savedPage !== '<?php echo $page; ?>') {
-            //     window.location.href = updateQueryString({ page: savedPage });
-            //     return;
-            // }
 
             if (savedVerticalPosition) {
                 window.scrollTo(0, parseInt(savedVerticalPosition));
@@ -720,16 +690,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['archive_id'])) {
         }
 
         // Modify existing functions to save state
-        function showArchiveModal(id) {
+        function showRestoreModal(id) {
             saveState();
-            const modal = document.getElementById('archiveModal');
-            const archiveId = document.getElementById('archiveId');
+            const modal = document.getElementById('restoreModal');
+            const restoreId = document.getElementById('restoreId');
             modal.style.display = 'block';
-            archiveId.value = id;
+            restoreId.value = id;
         }
 
-        function hideArchiveModal() {
-            const modal = document.getElementById('archiveModal');
+        function hideRestoreModal() {
+            const modal = document.getElementById('restoreModal');
+            modal.style.display = 'none';
+        }
+
+        function showDeleteModal(id) {
+            saveState();
+            const modal = document.getElementById('deleteModal');
+            const deleteId = document.getElementById('deleteId');
+            modal.style.display = 'block';
+            deleteId.value = id;
+        }
+
+        function hideDeleteModal() {
+            const modal = document.getElementById('deleteModal');
             modal.style.display = 'none';
         }
 
@@ -739,9 +722,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['archive_id'])) {
         }
 
         function changePage(page) {
-            // Remove this line:
-            // currentPage = page;
-            // saveState(); // Remove this line as well
             window.location.href = updateQueryString({ page: page });
         }
 
@@ -776,28 +756,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['archive_id'])) {
             saveState();
             window.location.href = updateQueryString({ sort: 'id', order: 'ASC', page: currentPage });
         }
-
-        // Modify the links to switch between active and archived views
-        document.addEventListener('DOMContentLoaded', function() {
-            const viewArchiveLink = document.querySelector('a[href="bm_archive.php"]');
-            const backToActiveLink = document.querySelector('a[href="barangay_midwifery.php"]');
-            
-            if (viewArchiveLink) {
-                viewArchiveLink.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    clearLocalStorage();
-                    window.location.href = 'bm_archive.php?page=1';
-                });
-            }
-            
-            if (backToActiveLink) {
-                backToActiveLink.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    clearLocalStorage();
-                    window.location.href = 'barangay_midwifery.php?page=1';
-                });
-            }
-        });
 
         document.addEventListener('DOMContentLoaded', function() {
             const table = document.querySelector('table');
@@ -839,54 +797,65 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['archive_id'])) {
             // Restore state after page load
             restoreState();
 
-            // Add event listeners for pagination buttons
-            const paginationButtons = document.querySelectorAll('.pagination-button');
-            paginationButtons.forEach(button => {
-                button.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const page = this.dataset.page;
-                    if (page) {
-                        changePage(page);
+            // Add event listeners for form submissions
+            const restoreForm = document.getElementById('restore-form');
+            const deleteForm = document.getElementById('delete-form');
+
+            restoreForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const formData = new FormData(this);
+                
+                fetch(window.location.pathname, {
+                    method: 'POST',
+                    body: formData
+                }).then(response => {
+                    if (response.ok) {
+                        hideRestoreModal();
+                        window.location.reload();
+                    } else {
+                        console.error('Restore operation failed');
+                        alert('Failed to restore the item. Please try again.');
                     }
+                }).catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred. Please try again.');
+                });
+            });
+
+            deleteForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const formData = new FormData(this);
+                
+                fetch(window.location.pathname, {
+                    method: 'POST',
+                    body: formData
+                }).then(response => {
+                    if (response.ok) {
+                        hideDeleteModal();
+                        window.location.reload();
+                    } else {
+                        console.error('Delete operation failed');
+                        alert('Failed to delete the item. Please try again.');
+                    }
+                }).catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred. Please try again.');
                 });
             });
 
             // Save state before unload
             window.addEventListener('beforeunload', saveState);
-
-            // Handle archive form submission
-            const archiveForm = document.getElementById('archive-form');
-            if (archiveForm) {
-                archiveForm.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    const formData = new FormData(this);
-                    
-                    fetch(window.location.pathname, {
-                        method: 'POST',
-                        body: formData
-                    }).then(response => {
-                        if (response.ok) {
-                            // Hide the modal
-                            hideArchiveModal();
-                            // Reload the page content
-                            window.location.reload();
-                        } else {
-                            console.error('Archive operation failed');
-                            alert('Failed to archive the item. Please try again.');
-                        }
-                    }).catch(error => {
-                        console.error('Error:', error);
-                        alert('An error occurred. Please try again.');
-                    });
-                });
-            }
         });
 
         // Handle modal close on outside click
         window.onclick = function(event) {
-            const modal = document.getElementById('archiveModal');
-            if (event.target === modal) {
-                hideArchiveModal();
+            const restoreModal = document.getElementById('restoreModal');
+            const deleteModal = document.getElementById('deleteModal');
+            if (event.target === restoreModal) {
+                hideRestoreModal();
+            }
+            if (event.target === deleteModal) {
+                hideDeleteModal();
             }
         }
     </script>
