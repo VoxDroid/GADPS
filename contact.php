@@ -40,88 +40,80 @@
 
         h1 {
             color: var(--primary-color);
-            margin-bottom: 1rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            font-size: 2.5rem;
         }
 
         .contact-info {
             background-color: white;
             border-radius: 10px;
-            padding: 20px;
+            padding: 30px;
             margin-bottom: 2rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .contact-info:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
         }
 
         .contact-info h2 {
             color: var(--secondary-color);
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 0.5rem;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
             margin-bottom: 1rem;
         }
 
-        .contact-info p {
-            margin-bottom: 0.5rem;
+        .contact-item i {
+            width: 30px;
+            color: var(--primary-color);
+            font-size: 1.2rem;
+            margin-right: 1rem;
         }
 
-        .contact-info i {
-            width: 25px;
-            color: var(--primary-color);
+        .contact-item p {
+            margin: 0;
+            font-size: 1.1rem;
         }
 
         .social-links {
             display: flex;
-            gap: 1rem;
-            margin-top: 1rem;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-top: 2rem;
         }
 
         .social-links a {
             color: var(--primary-color);
-            font-size: 1.5rem;
-            transition: color 0.3s ease;
+            font-size: 2rem;
+            transition: color 0.3s ease, transform 0.3s ease;
         }
 
         .social-links a:hover {
             color: var(--secondary-color);
+            transform: scale(1.1);
         }
 
-        form {
-            background-color: white;
+        .map-container {
+            margin-top: 2rem;
             border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
 
-        .form-group {
-            margin-bottom: 1rem;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 0.5rem;
-            color: var(--text-color);
-        }
-
-        input, textarea {
+        .map-container iframe {
             width: 100%;
-            padding: 0.5rem;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            font-family: 'Poppins', sans-serif;
-        }
-
-        textarea {
-            height: 150px;
-        }
-
-        button {
-            background-color: var(--primary-color);
-            color: white;
+            height: 300px;
             border: none;
-            padding: 0.75rem 1.5rem;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-
-        button:hover {
-            background-color: var(--secondary-color);
         }
     </style>
 </head>
@@ -132,39 +124,39 @@
         <h1>Contact Us</h1>
         
         <div class="contact-info">
-            <h2>Lead Developer</h2>
-            <p><i class="fas fa-user"></i> Drei</p>
-            <p><i class="fas fa-envelope"></i> ---</p>
-            <p><i class="fas fa-phone"></i> +63 ---</p>
-            <p><i class="fas fa-map-marker-alt"></i> Laguna State Polytechnic University - Santa Cruz Campus</p>
+            <h2>Contact Information::</h2>
+            <div class="contact-item">
+                <i class="fas fa-user"></i>
+                <p>Mr/Ms. Client</p>
+            </div>
+            <div class="contact-item">
+                <i class="fas fa-envelope"></i>
+                <p>client@email.com</p>
+            </div>
+            <div class="contact-item">
+                <i class="fas fa-phone"></i>
+                <p>+63 977 123 4567</p>
+            </div>
+            <div class="contact-item">
+                <i class="fas fa-map-marker-alt"></i>
+                <p>San Roque Barangay Hall, 68HF+3F3, Victoria, Laguna</p>
+            </div>
+            <div class="contact-item">
+                <i class="fas fa-clock"></i>
+                <p>Office Hours: Monday to Friday, 8:00 AM - 5:00 PM</p>
+            </div>
             
             <div class="social-links">
-                <a href="#" target="_blank"><i class="fab fa-facebook"></i></a>
-                <a href="#" target="_blank"><i class="fab fa-twitter"></i></a>
-                <a href="#" target="_blank"><i class="fab fa-linkedin"></i></a>
-                <a href="#" target="_blank"><i class="fab fa-github"></i></a>
+                <a href="https://www.facebook.com/lspuofficial" target="_blank"><i class="fab fa-facebook"></i></a>
+                <a href="https://twitter.com/lspuofficial" target="_blank"><i class="fab fa-twitter"></i></a>
+                <a href="https://www.linkedin.com/school/laguna-state-polytechnic-university" target="_blank"><i class="fab fa-linkedin"></i></a>
+                <a href="https://www.instagram.com/lspuofficial" target="_blank"><i class="fab fa-instagram"></i></a>
             </div>
         </div>
 
-        <form action="#" method="POST">
-            <div class="form-group">
-                <label for="name">Name:</label>
-                <input type="text" id="name" name="name" required>
-            </div>
-            <div class="form-group">
-                <label for="email">Email:</label>
-                <input type="email" id="email" name="email" required>
-            </div>
-            <div class="form-group">
-                <label for="subject">Subject:</label>
-                <input type="text" id="subject" name="subject" required>
-            </div>
-            <div class="form-group">
-                <label for="message">Message:</label>
-                <textarea id="message" name="message" required></textarea>
-            </div>
-            <button type="submit">Send Message</button>
-        </form>
+        <div class="map-container">
+            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d4617.761621104658!2d121.32108857576112!3d14.227634986097724!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x33bd5f63b39d6139%3A0x762dcbde4c90db8c!2sSan%20Roque%20Barangay%20Hall!5e1!3m2!1sen!2sph!4v1732087863048!5m2!1sen!2sph" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        </div>
     </div>
 
     <?php include 'assets/html/footer.html'; ?>

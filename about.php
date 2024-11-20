@@ -38,9 +38,10 @@
             border-radius: 20px 20px 0 0;
         }
 
-        h1, h2 {
+        h1, h2, h3 {
             color: var(--primary-color);
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
         }
 
         p {
@@ -49,30 +50,46 @@
         }
 
         .team-section {
-            display: flex;
-            flex-wrap: wrap;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 2rem;
             justify-content: center;
             margin-top: 2rem;
         }
 
         .team-member {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
             text-align: center;
-            width: 150px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .team-member:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
         }
 
         .team-member img {
-            width: 100px;
-            height: 100px;
+            width: 120px;
+            height: 120px;
             border-radius: 50%;
             object-fit: cover;
-            margin-bottom: 0.5rem;
+            margin-bottom: 1rem;
             border: 3px solid var(--primary-color);
+            transition: transform 0.3s ease;
+        }
+
+        .team-member:hover img {
+            transform: scale(1.05);
         }
 
         .team-member h3 {
-            font-size: 1rem;
-            margin-bottom: 0.25rem;
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            color: var(--primary-color);
         }
 
         .team-member p {
@@ -89,16 +106,24 @@
             width: 100%;
             height: 100%;
             background-color: rgba(0,0,0,0.4);
+            animation: fadeIn 0.3s ease-out;
         }
 
         .modal-content {
             background-color: #fefefe;
-            margin: 15% auto;
-            padding: 20px;
+            margin: 5% auto;
+            padding: 2rem;
             border: 1px solid #888;
-            width: 80%;
+            width: 90%;
             max-width: 600px;
-            border-radius: 10px;
+            border-radius: 15px;
+            animation: slideIn 0.3s ease-out;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
         }
 
         .close {
@@ -106,13 +131,51 @@
             float: right;
             font-size: 28px;
             font-weight: bold;
+            transition: color 0.3s ease;
         }
 
         .close:hover,
         .close:focus {
-            color: black;
+            color: var(--primary-color);
             text-decoration: none;
             cursor: pointer;
+        }
+
+        .social-links {
+            margin-top: 1rem;
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .social-links a {
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            transition: color 0.3s ease, transform 0.3s ease;
+        }
+
+        .social-links a:hover {
+            color: var(--secondary-color);
+            transform: scale(1.2);
+        }
+
+        #profileImage {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin: 0 auto 1rem;
+            display: block;
+            border: 3px solid var(--primary-color);
+        }
+
+        #profileDescription {
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        #profileRole {
+            text-align: center;
         }
     </style>
 </head>
@@ -123,75 +186,237 @@
         <h1>About the Gender and Development Profiling System</h1>
         <p>This project is an extension project for Laguna State Polytechnic University - Santa Cruz Campus. It serves as a comprehensive system for gender and development profiling, aiming to provide valuable insights and data management for community development initiatives.</p>
 
-        <h2>Project Team</h2>
-        <p><strong>Project Head:</strong> Evangelista</p>
+        <h2>Our Team</h2>
 
-        <h3>Programming Team</h3>
-        <div class="team-section">
-            <div class="team-member" onclick="showProfile('Mhar Andrei')">
-                <img src="/placeholder.svg?height=100&width=100" alt="Mhar Andrei">
-                <h3>Mhar Andrei</h3>
-                <p>Head Developer</p>
-            </div>
-            <div class="team-member" onclick="showProfile('Javier')">
-                <img src="/placeholder.svg?height=100&width=100" alt="Javier">
-                <h3>Javier</h3>
-                <p>Developer</p>
-            </div>
-            <div class="team-member" onclick="showProfile('Arat')">
-                <img src="/placeholder.svg?height=100&width=100" alt="Arat">
-                <h3>Arat</h3>
-                <p>Developer</p>
-            </div>
-        </div>
+        <?php
+        $team_members = [
+            [
+                'name' => 'John Kervin Evangelista',
+                'role' => 'Project Head',
+                'description' => 'Evangelista leads the Gender and Development Profiling System project, bringing years of experience in community development and project management.',
+                'image' => 'https://eu.ui-avatars.com/api/?name=J+E&size=150',
+                'social' => [
+                    'linkedin' => 'https://linkedin.com/in/evangelista',
+                    'twitter' => 'https://twitter.com/evangelista',
+                    'email' => 'mailto:evangelista@example.com'
+                ]
+            ],
+            [
+                'name' => 'Mhar Andrei Macapallag',
+                'role' => 'Head Developer',
+                'description' => 'Mhar Andrei leads the development team. He developed the system using PHP and SQLite3.',
+                'image' => 'assets/profile-img/Macapallag.png',
+                'social' => [
+                    'github' => 'https://github.com/VoxDroid',
+                    'twitter' => 'https://twitter.com/drei_zx',
+                    'instagram' => 'https://instagram.com/andrei_who',
+                    'facebook' => 'https://facebook.com/MharAndrei',
+                ]
+            ],
+            [
+                'name' => 'Geron Simon Javier',
+                'role' => 'Developer',
+                'description' => 'Javier is a skilled developer specializing in backend systems and database management.',
+                'image' => 'https://eu.ui-avatars.com/api/?name=G+J&size=150',
+                'social' => [
+                    'github' => 'https://github.com/javier',
+                    'linkedin' => 'https://linkedin.com/in/javier',
+                    'twitter' => 'https://twitter.com/javier'
+                ]
+            ],
+            [
+                'name' => 'Carlo Guerrero Arat',
+                'role' => 'Developer',
+                'description' => 'Arat focuses on frontend development, creating intuitive and responsive user interfaces.',
+                'image' => 'https://eu.ui-avatars.com/api/?name=C+A&size=150',
+                'social' => [
+                    'github' => 'https://github.com/arat',
+                    'dribbble' => 'https://dribbble.com/arat',
+                    'linkedin' => 'https://linkedin.com/in/arat'
+                ]
+            ],
+            [
+                'name' => 'Dexter Rebong',
+                'role' => 'Documentation',
+                'description' => 'Rebong is responsible for creating and maintaining comprehensive project documentation.',
+                'image' => 'https://eu.ui-avatars.com/api/?name=D+R&size=150',
+                'social' => [
+                    'linkedin' => 'https://linkedin.com/in/rebong',
+                    'twitter' => 'https://twitter.com/rebong'
+                ]
+            ],
+            [
+                'name' => 'Reigniell Ann Larano Bayani',
+                'role' => 'Documentation',
+                'description' => 'Bayani ensures that all project processes and outcomes are well-documented for future reference.',
+                'image' => 'https://eu.ui-avatars.com/api/?name=R+B&size=150',
+                'social' => [
+                    'linkedin' => 'https://linkedin.com/in/bayani',
+                    'github' => 'https://github.com/bayani'
+                ]
+            ],
+            [
+                'name' => 'Gabriel Scott Santos',
+                'role' => 'Documentation',
+                'description' => 'Santos contributes to the documentation team, focusing on user guides and technical specifications.',
+                'image' => 'https://eu.ui-avatars.com/api/?name=G+S&size=150',
+                'social' => [
+                    'linkedin' => 'https://linkedin.com/in/santos',
+                    'github' => 'https://github.com/santos'
+                ]
+            ],
+            [
+                'name' => 'Marquez Jethro',
+                'role' => 'Documentation',
+                'description' => 'Marquez specializes in creating visual documentation, including diagrams and infographics.',
+                'image' => 'https://eu.ui-avatars.com/api/?name=M+J&size=150',
+                'social' => [
+                    'linkedin' => 'https://linkedin.com/in/marquez',
+                    'behance' => 'https://www.behance.net/marquez'
+                ]
+            ],
+            [
+                'name' => 'Angelo Nicolas Arguidas Redera',
+                'role' => 'Documentation',
+                'description' => 'Redera focuses on quality assurance for all project documentation, ensuring accuracy and clarity.',
+                'image' => 'https://eu.ui-avatars.com/api/?name=A+R&size=150',
+                'social' => [
+                    'linkedin' => 'https://linkedin.com/in/redera',
+                    'twitter' => 'https://twitter.com/redera'
+                ]
+            ],
+            [
+                'name' => 'Jerahmeel Badillo',
+                'role' => 'Documentation',
+                'description' => 'Badillo specializes in creating user-friendly documentation and help resources.',
+                'image' => 'https://eu.ui-avatars.com/api/?name=J+B&size=150',
+                'social' => [
+                    'linkedin' => 'https://linkedin.com/in/badillo',
+                    'medium' => 'https://medium.com/@badillo'
+                ]
+            ],
+            [
+                'name' => 'Kendall Siclon',
+                'role' => 'Documentation',
+                'description' => 'Siclon is responsible for maintaining the project wiki and internal knowledge base.',
+                'image' => 'https://eu.ui-avatars.com/api/?name=K+S&size=150',
+                'social' => [
+                    'linkedin' => 'https://linkedin.com/in/siclon',
+                    'github' => 'https://github.com/siclon'
+                ]
+            ],
+            [
+                'name' => 'Jencel Sofer',
+                'role' => 'Documentation',
+                'description' => 'Sofer specializes in creating video tutorials and interactive documentation.',
+                'image' => 'https://eu.ui-avatars.com/api/?name=J+S&size=150',
+                'social' => [
+                    'linkedin' => 'https://linkedin.com/in/sofer',
+                    'youtube' => 'https://www.youtube.com/user/sofer'
+                ]
+            ],
+            [
+                'name' => 'Ed-Michael Anonuevo',
+                'role' => 'Manuscript',
+                'description' => 'Anonuevo is part of the manuscript team, focusing on creating detailed reports and academic papers.',
+                'image' => 'https://eu.ui-avatars.com/api/?name=E+A&size=150',
+                'social' => [
+                    'linkedin' => 'https://linkedin.com/in/anonuevo',
+                    'researchgate' => 'https://www.researchgate.net/profile/Anonuevo'
+                ]
+            ],
+            [
+                'name' => 'Erson D. Mardoquio',
+                'role' => 'Manuscript',
+                'description' => 'Mardoquio contributes to the manuscript team by analyzing data and writing comprehensive reports.',
+                'image' => 'https://eu.ui-avatars.com/api/?name=E+M&size=150',
+                'social' => [
+                    'linkedin' => 'https://linkedin.com/in/mardoquio',
+                    'orcid' => 'https://orcid.org/0000-0000-0000-0000'
+                ]
+            ],
+            [
+                'name' => 'Juan Carlos Ordonez',
+                'role' => 'Manuscript',
+                'description' => 'Ordonez specializes in statistical analysis and data visualization for the manuscript team.',
+                'image' => 'https://eu.ui-avatars.com/api/?name=J+O&size=150',
+                'social' => [
+                    'linkedin' => 'https://linkedin.com/in/ordonez',
+                    'github' => 'https://github.com/ordonez'
+                ]
+            ],
+            [
+                'name' => 'Vanesse Reyes',
+                'role' => 'Manuscript',
+                'description' => 'Reyes focuses on literature review and theoretical framework development for the project manuscripts.',
+                'image' => 'https://eu.ui-avatars.com/api/?name=V+R&size=150',
+                'social' => [
+                    'linkedin' => 'https://linkedin.com/in/reyes',
+                    'academia' => 'https://independent.academia.edu/Reyes'
+                ]
+            ],
+            [
+                'name' => 'Rolex R Calupig',
+                'role' => 'Manuscript',
+                'description' => 'Calupig is responsible for proofreading and editing the final manuscripts before submission.',
+                'image' => 'https://eu.ui-avatars.com/api/?name=R+C&size=150',
+                'social' => [
+                    'linkedin' => 'https://linkedin.com/in/calupig',
+                    'twitter' => 'https://twitter.com/calupig'
+                ]
+            ]
+        ];
 
-        <h3>Documentation Team</h3>
-        <div class="team-section">
-            <?php
-            $documentation_team = ['Rebong', 'Bayani', 'Santos', 'Marquez', 'Redera', 'Badillo', 'Siclon', 'Sofer'];
-            foreach ($documentation_team as $member) {
-                echo "<div class='team-member' onclick=\"showProfile('$member')\">";
-                echo "<img src='/placeholder.svg?height=100&width=100' alt='$member'>";
-                echo "<h3>$member</h3>";
-                echo "<p>Documentation</p>";
-                echo "</div>";
-            }
-            ?>
-        </div>
-
-        <h3>Manuscript Team</h3>
-        <div class="team-section">
-            <?php
-            $manuscript_team = ['Anonuevo', 'Mardoquio', 'Ordonez', 'Reyes', 'Calupig'];
-            foreach ($manuscript_team as $member) {
-                echo "<div class='team-member' onclick=\"showProfile('$member')\">";
-                echo "<img src='/placeholder.svg?height=100&width=100' alt='$member'>";
-                echo "<h3>$member</h3>";
-                echo "<p>Manuscript</p>";
-                echo "</div>";
-            }
-            ?>
-        </div>
+        echo "<div class='team-section'>";
+        foreach ($team_members as $member) {
+            echo "<div class='team-member' onclick=\"showProfile('" . htmlspecialchars(json_encode($member)) . "')\">";
+            echo "<img src='" . htmlspecialchars($member['image']) . "' alt='" . htmlspecialchars($member['name']) . "'>";
+            echo "<h3>" . htmlspecialchars($member['name']) . "</h3>";
+            echo "<p>" . htmlspecialchars($member['role']) . "</p>";
+            echo "</div>";
+        }
+        echo "</div>";
+        ?>
     </div>
 
     <div id="profileModal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
+            <img id="profileImage" src="" alt="Team Member">
             <h2 id="profileName"></h2>
+            <p id="profileRole"></p>
             <p id="profileDescription"></p>
+            <div id="socialLinks" class="social-links"></div>
         </div>
     </div>
 
     <?php include 'assets/html/footer.html'; ?>
 
     <script>
-        function showProfile(name) {
+        function showProfile(memberJson) {
+            const member = JSON.parse(memberJson);
             const modal = document.getElementById('profileModal');
+            const profileImage = document.getElementById('profileImage');
             const profileName = document.getElementById('profileName');
+            const profileRole = document.getElementById('profileRole');
             const profileDescription = document.getElementById('profileDescription');
+            const socialLinks = document.getElementById('socialLinks');
 
-            profileName.textContent = name;
-            profileDescription.textContent = `This is the profile description for ${name}. Additional details about their role and contributions to the project would be displayed here.`;
+            profileImage.src = member.image;
+            profileImage.alt = member.name;
+            profileName.textContent = member.name;
+            profileRole.textContent = member.role;
+            profileDescription.textContent = member.description;
+
+            socialLinks.innerHTML = '';
+            for (const [platform, url] of Object.entries(member.social)) {
+                const link = document.createElement('a');
+                link.href = url;
+                link.target = '_blank';
+                link.rel = 'noopener noreferrer';
+                link.innerHTML = `<i class="fab fa-${platform}"></i>`;
+                socialLinks.appendChild(link);
+            }
 
             modal.style.display = 'block';
         }
