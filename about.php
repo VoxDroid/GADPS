@@ -196,9 +196,7 @@
                 'description' => 'Evangelista leads the Gender and Development Profiling System project, bringing years of experience in community development and project management.',
                 'image' => 'https://eu.ui-avatars.com/api/?name=J+E&size=150',
                 'social' => [
-                    'linkedin' => 'https://linkedin.com/in/evangelista',
-                    'twitter' => 'https://twitter.com/evangelista',
-                    'email' => 'mailto:evangelista@example.com'
+                    'facebook' => 'https://www.facebook.com/jakervin29',
                 ]
             ],
             [
@@ -219,9 +217,7 @@
                 'description' => 'Javier is a skilled developer specializing in backend systems and database management.',
                 'image' => 'https://eu.ui-avatars.com/api/?name=G+J&size=150',
                 'social' => [
-                    'github' => 'https://github.com/javier',
-                    'linkedin' => 'https://linkedin.com/in/javier',
-                    'twitter' => 'https://twitter.com/javier'
+                    'facebook' => 'https://www.facebook.com/GSAJ0316',
                 ]
             ],
             [
@@ -230,9 +226,7 @@
                 'description' => 'Arat focuses on frontend development, creating intuitive and responsive user interfaces.',
                 'image' => 'https://eu.ui-avatars.com/api/?name=C+A&size=150',
                 'social' => [
-                    'github' => 'https://github.com/arat',
-                    'dribbble' => 'https://dribbble.com/arat',
-                    'linkedin' => 'https://linkedin.com/in/arat'
+                    'facebook' => 'https://www.facebook.com/profile.php?id=100009647451125',
                 ]
             ],
             [
@@ -241,8 +235,7 @@
                 'description' => 'Rebong is responsible for creating and maintaining comprehensive project documentation.',
                 'image' => 'https://eu.ui-avatars.com/api/?name=D+R&size=150',
                 'social' => [
-                    'linkedin' => 'https://linkedin.com/in/rebong',
-                    'twitter' => 'https://twitter.com/rebong'
+                    'facebook' => 'https://www.facebook.com/diman.rebong.5',
                 ]
             ],
             [
@@ -251,8 +244,7 @@
                 'description' => 'Bayani ensures that all project processes and outcomes are well-documented for future reference.',
                 'image' => 'https://eu.ui-avatars.com/api/?name=R+B&size=150',
                 'social' => [
-                    'linkedin' => 'https://linkedin.com/in/bayani',
-                    'github' => 'https://github.com/bayani'
+                    'facebook' => 'https://www.facebook.com/reigniellann.laranobayani',
                 ]
             ],
             [
@@ -261,8 +253,8 @@
                 'description' => 'Santos contributes to the documentation team, focusing on user guides and technical specifications.',
                 'image' => 'https://eu.ui-avatars.com/api/?name=G+S&size=150',
                 'social' => [
-                    'linkedin' => 'https://linkedin.com/in/santos',
-                    'github' => 'https://github.com/santos'
+                    'facebook' => 'https://www.facebook.com/yvenneten',
+                    'facebook' => 'https://www.facebook.com/p/Gabriel-Scott-Santos-100064884055612/'
                 ]
             ],
             [
@@ -271,8 +263,7 @@
                 'description' => 'Marquez specializes in creating visual documentation, including diagrams and infographics.',
                 'image' => 'https://eu.ui-avatars.com/api/?name=M+J&size=150',
                 'social' => [
-                    'linkedin' => 'https://linkedin.com/in/marquez',
-                    'behance' => 'https://www.behance.net/marquez'
+                    'facebook' => 'https://www.facebook.com/marquez.jethro.75',
                 ]
             ],
             [
@@ -281,8 +272,7 @@
                 'description' => 'Redera focuses on quality assurance for all project documentation, ensuring accuracy and clarity.',
                 'image' => 'https://eu.ui-avatars.com/api/?name=A+R&size=150',
                 'social' => [
-                    'linkedin' => 'https://linkedin.com/in/redera',
-                    'twitter' => 'https://twitter.com/redera'
+                    'facebook' => 'https://www.facebook.com/angelo21redera',
                 ]
             ],
             [
@@ -291,8 +281,7 @@
                 'description' => 'Badillo specializes in creating user-friendly documentation and help resources.',
                 'image' => 'https://eu.ui-avatars.com/api/?name=J+B&size=150',
                 'social' => [
-                    'linkedin' => 'https://linkedin.com/in/badillo',
-                    'medium' => 'https://medium.com/@badillo'
+                    'facebook' => 'https://www.facebook.com/profile.php?id=100009845225960',
                 ]
             ],
             [
@@ -301,8 +290,7 @@
                 'description' => 'Siclon is responsible for maintaining the project wiki and internal knowledge base.',
                 'image' => 'https://eu.ui-avatars.com/api/?name=K+S&size=150',
                 'social' => [
-                    'linkedin' => 'https://linkedin.com/in/siclon',
-                    'github' => 'https://github.com/siclon'
+                    'facebook' => 'https://www.facebook.com/profile.php?id=100092182882611',
                 ]
             ],
             [
@@ -311,8 +299,7 @@
                 'description' => 'Sofer specializes in creating video tutorials and interactive documentation.',
                 'image' => 'https://eu.ui-avatars.com/api/?name=J+S&size=150',
                 'social' => [
-                    'linkedin' => 'https://linkedin.com/in/sofer',
-                    'youtube' => 'https://www.youtube.com/user/sofer'
+                    'facebook' => 'https://www.facebook.com/jencel.sofer',
                 ]
             ],
             [
@@ -321,8 +308,7 @@
                 'description' => 'Anonuevo is part of the manuscript team, focusing on creating detailed reports and academic papers.',
                 'image' => 'https://eu.ui-avatars.com/api/?name=E+A&size=150',
                 'social' => [
-                    'linkedin' => 'https://linkedin.com/in/anonuevo',
-                    'researchgate' => 'https://www.researchgate.net/profile/Anonuevo'
+                    'facebook' => 'https://www.facebook.com/maila.anonuevo.27',
                 ]
             ],
             [
@@ -331,8 +317,7 @@
                 'description' => 'Mardoquio contributes to the manuscript team by analyzing data and writing comprehensive reports.',
                 'image' => 'https://eu.ui-avatars.com/api/?name=E+M&size=150',
                 'social' => [
-                    'linkedin' => 'https://linkedin.com/in/mardoquio',
-                    'orcid' => 'https://orcid.org/0000-0000-0000-0000'
+                    'facebook' => 'https://www.facebook.com/erson121'
                 ]
             ],
             [
@@ -341,8 +326,7 @@
                 'description' => 'Ordonez specializes in statistical analysis and data visualization for the manuscript team.',
                 'image' => 'https://eu.ui-avatars.com/api/?name=J+O&size=150',
                 'social' => [
-                    'linkedin' => 'https://linkedin.com/in/ordonez',
-                    'github' => 'https://github.com/ordonez'
+                    'facebook' => 'https://www.facebook.com/WraithzrG'
                 ]
             ],
             [
@@ -351,8 +335,7 @@
                 'description' => 'Reyes focuses on literature review and theoretical framework development for the project manuscripts.',
                 'image' => 'https://eu.ui-avatars.com/api/?name=V+R&size=150',
                 'social' => [
-                    'linkedin' => 'https://linkedin.com/in/reyes',
-                    'academia' => 'https://independent.academia.edu/Reyes'
+                    'facebook' => 'https://www.facebook.com/vanesse.reyes.17'
                 ]
             ],
             [
@@ -361,8 +344,7 @@
                 'description' => 'Calupig is responsible for proofreading and editing the final manuscripts before submission.',
                 'image' => 'https://eu.ui-avatars.com/api/?name=R+C&size=150',
                 'social' => [
-                    'linkedin' => 'https://linkedin.com/in/calupig',
-                    'twitter' => 'https://twitter.com/calupig'
+                    'facebook' => 'https://www.facebook.com/rolex.calupig'
                 ]
             ]
         ];
