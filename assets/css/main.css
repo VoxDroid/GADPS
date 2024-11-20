@@ -84,6 +84,12 @@ body {
     margin: 0;
 }
 
+.logo-link {
+    text-decoration: none;
+    display: flex;
+    gap: 10px
+}
+
 .nav-links {
     display: flex;
     gap: 2rem;
@@ -140,3 +146,4 @@ h1 {
     color: var(--secondary-color);
     transform: translateY(-2px);
 }
+

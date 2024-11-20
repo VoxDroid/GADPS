@@ -53,10 +53,10 @@ $db->close();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <?php include 'assets/html/disable-caching.html'; ?>
     <title>Gender and Development Profiling System</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="assets/css/main.css">
+    <?php include 'assets/html/icon_front.html'; ?>
+    <?php include 'assets/html/styling_front.html'; ?>
     <style>
         .carousel-section {
             flex: 1;
