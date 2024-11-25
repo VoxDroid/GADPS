@@ -44,6 +44,61 @@ $db->exec("CREATE TABLE IF NOT EXISTS purok_selection (
     item_status TEXT DEFAULT 'active'
 )");
 
+$db->exec("CREATE TABLE IF NOT EXISTS child_immunization (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    age INTEGER,
+    birthdate DATE,
+    mother_name TEXT,
+    bcg DATE,
+    hepa_b DATE,
+    penta_1 DATE,
+    penta_2 DATE,
+    penta_3 DATE,
+    opv_1 DATE,
+    opv_2 DATE,
+    opv_3 DATE,
+    pcv_1 DATE,
+    pcv_2 DATE,
+    pcv_3 DATE,
+    ipv DATE,
+    mcv_1 DATE,
+    mcv_2 DATE,
+    item_status TEXT DEFAULT 'active'
+)");
+
+// Fetch statistics
+$total_midwifery = $db->querySingle("SELECT COUNT(*) FROM barangay_midwifery WHERE item_status = 'active'");
+$total_purok = $db->querySingle("SELECT COUNT(*) FROM purok_selection WHERE item_status = 'active'");
+$total_immunization = $db->querySingle("SELECT COUNT(*) FROM child_immunization WHERE item_status = 'active'");
+
+// Fetch data for graphs
+$purok_data = $db->query("SELECT purok, COUNT(*) as count FROM purok_selection WHERE item_status = 'active' GROUP BY purok");
+$purok_counts = [];
+while ($row = $purok_data->fetchArray(SQLITE3_ASSOC)) {
+    $purok_counts[$row['purok']] = $row['count'];
+}
+
+$immunization_data = $db->query("SELECT 
+    SUM(CASE WHEN TRIM(bcg) != '' AND bcg IS NOT NULL THEN 1 ELSE 0 END) as bcg,
+    SUM(CASE WHEN TRIM(hepa_b) != '' AND hepa_b IS NOT NULL THEN 1 ELSE 0 END) as hepa_b,
+    SUM(CASE WHEN TRIM(penta_1) != '' AND penta_1 IS NOT NULL THEN 1 ELSE 0 END) as penta_1,
+    SUM(CASE WHEN TRIM(penta_2) != '' AND penta_2 IS NOT NULL THEN 1 ELSE 0 END) as penta_2,
+    SUM(CASE WHEN TRIM(penta_3) != '' AND penta_3 IS NOT NULL THEN 1 ELSE 0 END) as penta_3,
+    SUM(CASE WHEN TRIM(opv_1) != '' AND opv_1 IS NOT NULL THEN 1 ELSE 0 END) as opv_1,
+    SUM(CASE WHEN TRIM(opv_2) != '' AND opv_2 IS NOT NULL THEN 1 ELSE 0 END) as opv_2,
+    SUM(CASE WHEN TRIM(opv_3) != '' AND opv_3 IS NOT NULL THEN 1 ELSE 0 END) as opv_3,
+    SUM(CASE WHEN TRIM(pcv_1) != '' AND pcv_1 IS NOT NULL THEN 1 ELSE 0 END) as pcv_1,
+    SUM(CASE WHEN TRIM(pcv_2) != '' AND pcv_2 IS NOT NULL THEN 1 ELSE 0 END) as pcv_2,
+    SUM(CASE WHEN TRIM(pcv_3) != '' AND pcv_3 IS NOT NULL THEN 1 ELSE 0 END) as pcv_3,
+    SUM(CASE WHEN TRIM(ipv) != '' AND ipv IS NOT NULL THEN 1 ELSE 0 END) as ipv,
+    SUM(CASE WHEN TRIM(mcv_1) != '' AND mcv_1 IS NOT NULL THEN 1 ELSE 0 END) as mcv_1,
+    SUM(CASE WHEN TRIM(mcv_2) != '' AND mcv_2 IS NOT NULL THEN 1 ELSE 0 END) as mcv_2
+FROM child_immunization
+WHERE item_status = 'active';");
+
+$immunization_counts = $immunization_data->fetchArray(SQLITE3_ASSOC);
+
 // Close the database connection
 $db->close();
 ?>
@@ -57,7 +112,86 @@ $db->close();
     <title>Gender and Development Profiling System</title>
     <?php include 'assets/html/icon_front.html'; ?>
     <?php include 'assets/html/styling_front.html'; ?>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .dashboard {
+            background: linear-gradient(145deg, #ffffff, #f6f7ff);
+            border-radius: 20px;
+            padding: 2rem;
+            margin: 2rem auto;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            max-width: 1200px;
+            aspect-ratio: 1 / 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .dashboard-title {
+            color: var(--primary-color);
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-title {
+            color: var(--secondary-color);
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            color: var(--primary-color);
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        .charts-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            flex-grow: 1;
+        }
+
+        .chart-wrapper {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .chart-title {
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
         .carousel-section {
             flex: 1;
             display: flex;
@@ -238,6 +372,34 @@ $db->close();
         </div>
     </main>
 
+    <div class="dashboard">
+        <h2 class="dashboard-title">Dashboard Statistics</h2>
+        <div class="stats-container">
+            <div class="stat-card">
+                <h3 class="stat-title">Total Midwifery Entries</h3>
+                <p class="stat-value"><?php echo $total_midwifery; ?></p>
+            </div>
+            <div class="stat-card">
+                <h3 class="stat-title">Total Purok Entries</h3>
+                <p class="stat-value"><?php echo $total_purok; ?></p>
+            </div>
+            <div class="stat-card">
+                <h3 class="stat-title">Total Immunization Entries</h3>
+                <p class="stat-value"><?php echo $total_immunization; ?></p>
+            </div>
+        </div>
+        <div class="charts-container">
+            <div class="chart-wrapper">
+                <h3 class="chart-title">Purok Distribution</h3>
+                <div id="purokChart"></div>
+            </div>
+            <div class="chart-wrapper">
+                <h3 class="chart-title">Immunization Coverage</h3>
+                <div id="immunizationChart"></div>
+            </div>
+        </div>
+    </div>
+
     <?php include 'assets/html/footer.html'; ?>
 
     <script>
@@ -281,6 +443,137 @@ $db->close();
                     icon.style.transform = '';
                 });
             });
+
+            // Purok Distribution Chart
+            const purokOptions = {
+                series: [{
+                    name: 'Number of Entries',
+                    data: [
+                        <?php echo $purok_counts[1] ?? 0; ?>,
+                        <?php echo $purok_counts[2] ?? 0; ?>,
+                        <?php echo $purok_counts[3] ?? 0; ?>,
+                        <?php echo $purok_counts[4] ?? 0; ?>,
+                        <?php echo $purok_counts[5] ?? 0; ?>,
+                        <?php echo $purok_counts[6] ?? 0; ?>
+                    ]
+                }],
+                chart: {
+                    type: 'bar',
+                    height: 375,
+                    toolbar: {
+                        show: false
+                    }
+                },
+                plotOptions: {
+                    bar: {
+                        borderRadius: 4,
+                        horizontal: false,
+                    }
+                },
+                dataLabels: {
+                    enabled: false
+                },
+                xaxis: {
+                    categories: ['Purok 1', 'Purok 2', 'Purok 3', 'Purok 4', 'Purok 5', 'Purok 6'],
+                },
+                colors: ['#E6B800'],
+                title: {
+                    text: 'Purok Distribution',
+                    align: 'center',
+                    style: {
+                        fontSize: '18px',
+                        fontWeight: 'bold',
+                        fontFamily: 'Poppins, sans-serif',
+                        color: '#333'
+                    }
+                }
+            };
+
+            const purokChart = new ApexCharts(document.querySelector("#purokChart"), purokOptions);
+            purokChart.render();
+
+            // Immunization Coverage Chart
+            const immunizationOptions = {
+                series: [{
+                    name: 'Number of Immunizations',
+                    data: [
+                        <?php echo $immunization_counts['bcg']; ?>,
+                        <?php echo $immunization_counts['hepa_b']; ?>,
+                        <?php echo $immunization_counts['penta_1']; ?>,
+                        <?php echo $immunization_counts['penta_2']; ?>,
+                        <?php echo $immunization_counts['penta_3']; ?>,
+                        <?php echo $immunization_counts['opv_1']; ?>,
+                        <?php echo $immunization_counts['opv_2']; ?>,
+                        <?php echo $immunization_counts['opv_3']; ?>,
+                        <?php echo $immunization_counts['pcv_1']; ?>,
+                        <?php echo $immunization_counts['pcv_2']; ?>,
+                        <?php echo $immunization_counts['pcv_3']; ?>,
+                        <?php echo $immunization_counts['ipv']; ?>,
+                        <?php echo $immunization_counts['mcv_1']; ?>,
+                        <?php echo $immunization_counts['mcv_2']; ?>
+                    ]
+                }],
+                chart: {
+                    height: 375,
+                    type: 'radar',
+                },
+                dataLabels: {
+                    enabled: true
+                },
+                plotOptions: {
+                    radar: {
+                        size: 140,
+                        polygons: {
+                            strokeColors: '#e9e9e9',
+                            fill: {
+                                colors: ['#f8f8f8', '#fff']
+                            }
+                        }
+                    }
+                },
+                title: {
+                    text: 'Immunization Coverage',
+                    align: 'center',
+                    style: {
+                        fontSize: '18px',
+                        fontWeight: 'bold',
+                        fontFamily: 'Poppins, sans-serif',
+                        color: '#333'
+                    }
+                },
+                colors: ['#D4A017'],
+                markers: {
+                    size: 4,
+                    colors: ['#fff'],
+                    strokeColor: '#D4A017',
+                    strokeWidth: 2,
+                },
+                tooltip: {
+                    y: {
+                        formatter: function(val) {
+                            return val
+                        }
+                    }
+                },
+                xaxis: {
+                    categories: ['BCG', 'Hepa B', 'Penta 1', 'Penta 2', 'Penta 3', 'OPV 1', 'OPV 2', 'OPV 3', 'PCV 1', 'PCV 2', 'PCV 3', 'IPV', 'MCV 1', 'MCV 2']
+                },
+                yaxis: {
+                    tickAmount: 7,
+                    labels: {
+                        formatter: function(val, i) {
+                            if (i % 2 === 0) {
+                                return val
+                            } else {
+                                return ''
+                            }
+                        }
+                    }
+                }
+            };
+
+            const immunizationChart = new ApexCharts(document.querySelector("#immunizationChart"), immunizationOptions);
+            immunizationChart.render();
         });
     </script>
 </body>

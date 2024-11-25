@@ -127,15 +127,15 @@
             <h2>Contact Information::</h2>
             <div class="contact-item">
                 <i class="fas fa-user"></i>
-                <p>Mr/Ms. Client</p>
+                <p>Sangguniang Barangay San Roque</p>
             </div>
             <div class="contact-item">
                 <i class="fas fa-envelope"></i>
-                <p>client@email.com</p>
+                <p>sangguniangbrgysanroque@email.com (unavailable)</p>
             </div>
             <div class="contact-item">
                 <i class="fas fa-phone"></i>
-                <p>+63 977 123 4567</p>
+                <p>Tel no. (049) 559-0281</p>
             </div>
             <div class="contact-item">
                 <i class="fas fa-map-marker-alt"></i>
@@ -147,10 +147,10 @@
             </div>
             
             <div class="social-links">
-                <a href="https://www.facebook.com/lspuofficial" target="_blank"><i class="fab fa-facebook"></i></a>
-                <a href="https://twitter.com/lspuofficial" target="_blank"><i class="fab fa-twitter"></i></a>
-                <a href="https://www.linkedin.com/school/laguna-state-polytechnic-university" target="_blank"><i class="fab fa-linkedin"></i></a>
-                <a href="https://www.instagram.com/lspuofficial" target="_blank"><i class="fab fa-instagram"></i></a>
+                <a href="https://www.facebook.com/sbsanroque" target="_blank"><i class="fab fa-facebook"></i></a>
+                <a href="#" ><i class="fab fa-twitter"></i></a>
+                <a href="#" ><i class="fab fa-linkedin"></i></a>
+                <a href="#" ><i class="fab fa-instagram"></i></a>
             </div>
         </div>
 

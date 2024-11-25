@@ -1,10 +1,10 @@
-
 :root {
-    --primary-color: #6A5ACD;
-    --secondary-color: #9370DB;
-    --accent-color: #E6E6FA;
-    --text-color: #333;
-    --shadow-color: rgba(106, 90, 205, 0.3);
+    --primary-color: #E6B800;
+    --secondary-color: #D4A017;
+    --accent-color: #F5E6C3;
+    --text-color: #4A4A4A;
+    --background-color: #F0EAD6;
+    --shadow-color: rgba(230, 184, 0, 0.2);
 }
 
 * {
@@ -35,14 +35,15 @@
 }
 
 body {
-    background: linear-gradient(135deg, #E6E6FA 0%, #9370DB 100%);
+    background: linear-gradient(135deg, #F0EAD6 0%, #E6D7B3 100%);
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    color: var(--text-color);
 }
 
 .header {
-    background-color: white;
+    background-color: var(--background-color);
     padding: 0.75rem 2rem;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
@@ -72,7 +73,7 @@ body {
 }
 
 .logo i {
-    color: white;
+    color: var(--background-color);
     font-size: 1.2rem;
 }
 
@@ -116,7 +117,7 @@ h1 {
 }
 
 .footer {
-    background-color: white;
+    background-color: var(--background-color);
     padding: 1rem;
     margin-top: auto;
     box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
@@ -146,4 +147,3 @@ h1 {
     color: var(--secondary-color);
     transform: translateY(-2px);
 }
-

@@ -194,7 +194,7 @@
                 'name' => 'John Kervin Evangelista',
                 'role' => 'Project Head',
                 'description' => 'Evangelista leads the Gender and Development Profiling System project, bringing years of experience in community development and project management.',
-                'image' => 'https://eu.ui-avatars.com/api/?name=J+E&size=150',
+                'image' => 'assets/profile-img/Evangelista.png',
                 'social' => [
                     'facebook' => 'https://www.facebook.com/jakervin29',
                 ]
@@ -215,7 +215,7 @@
                 'name' => 'Geron Simon Javier',
                 'role' => 'Developer',
                 'description' => 'Javier is a skilled developer specializing in backend systems and database management.',
-                'image' => 'https://eu.ui-avatars.com/api/?name=G+J&size=150',
+                'image' => 'assets/profile-img/Javier.JPG',
                 'social' => [
                     'facebook' => 'https://www.facebook.com/GSAJ0316',
                 ]
@@ -224,7 +224,7 @@
                 'name' => 'Carlo Guerrero Arat',
                 'role' => 'Developer',
                 'description' => 'Arat focuses on frontend development, creating intuitive and responsive user interfaces.',
-                'image' => 'https://eu.ui-avatars.com/api/?name=C+A&size=150',
+                'image' => 'assets/profile-img/Arat.jpeg',
                 'social' => [
                     'facebook' => 'https://www.facebook.com/profile.php?id=100009647451125',
                 ]
@@ -233,7 +233,7 @@
                 'name' => 'Dexter Rebong',
                 'role' => 'Documentation',
                 'description' => 'Rebong is responsible for creating and maintaining comprehensive project documentation.',
-                'image' => 'https://eu.ui-avatars.com/api/?name=D+R&size=150',
+                'image' => 'assets/profile-img/Rebong.jpg',
                 'social' => [
                     'facebook' => 'https://www.facebook.com/diman.rebong.5',
                 ]
@@ -242,7 +242,7 @@
                 'name' => 'Reigniell Ann Larano Bayani',
                 'role' => 'Documentation',
                 'description' => 'Bayani ensures that all project processes and outcomes are well-documented for future reference.',
-                'image' => 'https://eu.ui-avatars.com/api/?name=R+B&size=150',
+                'image' => 'assets/profile-img/Bayani.JPG',
                 'social' => [
                     'facebook' => 'https://www.facebook.com/reigniellann.laranobayani',
                 ]
@@ -251,7 +251,7 @@
                 'name' => 'Gabriel Scott Santos',
                 'role' => 'Documentation',
                 'description' => 'Santos contributes to the documentation team, focusing on user guides and technical specifications.',
-                'image' => 'https://eu.ui-avatars.com/api/?name=G+S&size=150',
+                'image' => 'assets/profile-img/Santos.jpg',
                 'social' => [
                     'facebook' => 'https://www.facebook.com/yvenneten',
                     'facebook' => 'https://www.facebook.com/p/Gabriel-Scott-Santos-100064884055612/'
@@ -261,7 +261,7 @@
                 'name' => 'Marquez Jethro',
                 'role' => 'Documentation',
                 'description' => 'Marquez specializes in creating visual documentation, including diagrams and infographics.',
-                'image' => 'https://eu.ui-avatars.com/api/?name=M+J&size=150',
+                'image' => 'assets/profile-img/Marquez.png',
                 'social' => [
                     'facebook' => 'https://www.facebook.com/marquez.jethro.75',
                 ]
@@ -270,7 +270,7 @@
                 'name' => 'Angelo Nicolas Arguidas Redera',
                 'role' => 'Documentation',
                 'description' => 'Redera focuses on quality assurance for all project documentation, ensuring accuracy and clarity.',
-                'image' => 'https://eu.ui-avatars.com/api/?name=A+R&size=150',
+                'image' => 'assets/profile-img/Redera.jpg',
                 'social' => [
                     'facebook' => 'https://www.facebook.com/angelo21redera',
                 ]
@@ -279,7 +279,7 @@
                 'name' => 'Jerahmeel Badillo',
                 'role' => 'Documentation',
                 'description' => 'Badillo specializes in creating user-friendly documentation and help resources.',
-                'image' => 'https://eu.ui-avatars.com/api/?name=J+B&size=150',
+                'image' => 'assets/profile-img/Badillo.JPG',
                 'social' => [
                     'facebook' => 'https://www.facebook.com/profile.php?id=100009845225960',
                 ]
@@ -288,7 +288,7 @@
                 'name' => 'Kendall Siclon',
                 'role' => 'Documentation',
                 'description' => 'Siclon is responsible for maintaining the project wiki and internal knowledge base.',
-                'image' => 'https://eu.ui-avatars.com/api/?name=K+S&size=150',
+                'image' => 'assets/profile-img/Siclon.jpg',
                 'social' => [
                     'facebook' => 'https://www.facebook.com/profile.php?id=100092182882611',
                 ]
@@ -297,7 +297,7 @@
                 'name' => 'Jencel Sofer',
                 'role' => 'Documentation',
                 'description' => 'Sofer specializes in creating video tutorials and interactive documentation.',
-                'image' => 'https://eu.ui-avatars.com/api/?name=J+S&size=150',
+                'image' => 'assets/profile-img/Sofer.jpg',
                 'social' => [
                     'facebook' => 'https://www.facebook.com/jencel.sofer',
                 ]
@@ -306,7 +306,7 @@
                 'name' => 'Ed-Michael Anonuevo',
                 'role' => 'Manuscript',
                 'description' => 'Anonuevo is part of the manuscript team, focusing on creating detailed reports and academic papers.',
-                'image' => 'https://eu.ui-avatars.com/api/?name=E+A&size=150',
+                'image' => 'assets/profile-img/Anonuevo.jpg',
                 'social' => [
                     'facebook' => 'https://www.facebook.com/maila.anonuevo.27',
                 ]
@@ -315,7 +315,7 @@
                 'name' => 'Erson D. Mardoquio',
                 'role' => 'Manuscript',
                 'description' => 'Mardoquio contributes to the manuscript team by analyzing data and writing comprehensive reports.',
-                'image' => 'https://eu.ui-avatars.com/api/?name=E+M&size=150',
+                'image' => 'assets/profile-img/Mardoquio.jpg',
                 'social' => [
                     'facebook' => 'https://www.facebook.com/erson121'
                 ]
@@ -324,7 +324,7 @@
                 'name' => 'Juan Carlos Ordonez',
                 'role' => 'Manuscript',
                 'description' => 'Ordonez specializes in statistical analysis and data visualization for the manuscript team.',
-                'image' => 'https://eu.ui-avatars.com/api/?name=J+O&size=150',
+                'image' => 'assets/profile-img/Ordonez.jpg',
                 'social' => [
                     'facebook' => 'https://www.facebook.com/WraithzrG'
                 ]
@@ -333,7 +333,7 @@
                 'name' => 'Vanesse Reyes',
                 'role' => 'Manuscript',
                 'description' => 'Reyes focuses on literature review and theoretical framework development for the project manuscripts.',
-                'image' => 'https://eu.ui-avatars.com/api/?name=V+R&size=150',
+                'image' => 'assets/profile-img/Reyes.webp',
                 'social' => [
                     'facebook' => 'https://www.facebook.com/vanesse.reyes.17'
                 ]
@@ -342,7 +342,7 @@
                 'name' => 'Rolex R Calupig',
                 'role' => 'Manuscript',
                 'description' => 'Calupig is responsible for proofreading and editing the final manuscripts before submission.',
-                'image' => 'https://eu.ui-avatars.com/api/?name=R+C&size=150',
+                'image' => 'assets/profile-img/Calupid.png',
                 'social' => [
                     'facebook' => 'https://www.facebook.com/rolex.calupig'
                 ]
