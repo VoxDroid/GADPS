@@ -342,7 +342,7 @@ $db->close();
         }
     </style>
 </head>
-<body>
+<body class="slideshow-background">
     <?php include 'assets/html/header_front.html'; ?>
 
     <main class="carousel-section">

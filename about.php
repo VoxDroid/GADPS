@@ -179,7 +179,7 @@
         }
     </style>
 </head>
-<body>
+<body class="slideshow-background">
     <?php include 'assets/html/header_front.html'; ?>
 
     <div class="container">
@@ -192,7 +192,7 @@
         $team_members = [
             [
                 'name' => 'John Kervin Evangelista',
-                'role' => 'Project Head',
+                'role' => 'Team Leader',
                 'description' => 'Evangelista leads the Gender and Development Profiling System project, bringing years of experience in community development and project management.',
                 'image' => 'assets/profile-img/Evangelista.png',
                 'social' => [

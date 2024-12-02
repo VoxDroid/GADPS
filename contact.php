@@ -117,7 +117,7 @@
         }
     </style>
 </head>
-<body>
+<body class="slideshow-background">
     <?php include 'assets/html/header_front.html'; ?>
 
     <div class="container">
