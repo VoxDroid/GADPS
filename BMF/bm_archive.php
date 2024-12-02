@@ -133,7 +133,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            font-size: 16px;
+            font-size: 14px;
             margin: 4px 8px;
             cursor: pointer;
             border-radius: 8px;
@@ -246,8 +246,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         .button-restore, .button-delete {
             font-family: 'Poppins', sans-serif;
             font-size: 14px;
-            padding: 8px 16px;
-            margin: 2px;
+            margin: 4px;
             min-width: 100px;
         }
 
