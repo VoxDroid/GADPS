@@ -154,7 +154,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['archive_id'])) {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            font-size: 16px;
+            font-size: 14px;
             margin: 4px 8px;
             cursor: pointer;
             border-radius: 8px;
@@ -274,7 +274,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['archive_id'])) {
         .button-edit, .button-archive {
             font-family: 'Poppins', sans-serif;
             font-size: 14px;
-            padding: 8px 16px;
             margin: 2px;
             min-width: 100px;
         }
